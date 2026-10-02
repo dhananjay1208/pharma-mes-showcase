@@ -1,0 +1,2962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISA-95 for Oral Solid Dose Manufacturing | MES Practitioner Training</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #1e293b;
+            /* Pack palette (PHARMA-MES-CONTEXT.md "Design grammar"): business/indigo
+               #3730a3 family as the page accent, MES teal #0f766e as the companion glow.
+               Purdue level colors and Part colors below are a CROSS-PACK convention: keep. */
+            --accent: #4338ca;
+            --accent-bright: #818cf8;
+            --teal: #0f766e;
+            --teal-bright: #2dd4bf;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --purple: #8b5cf6;
+            --cyan: #06b6d4;
+            --pink: #ec4899;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --card-bg: rgba(30, 41, 59, 0.8);
+            --glass: rgba(15, 23, 42, 0.9);
+            
+            /* ISA-95 Level Colors */
+            --level-4: #8b5cf6;
+            --level-3: #3b82f6;
+            --level-2: #06b6d4;
+            --level-1: #10b981;
+            --level-0: #f59e0b;
+            
+            /* Part Colors */
+            --part-1: #f59e0b;
+            --part-2: #3b82f6;
+            --part-3: #10b981;
+            --part-4: #8b5cf6;
+            --part-5: #ec4899;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--primary);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Background Pattern */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(15, 118, 110, 0.16) 0%, transparent 50%),
+                linear-gradient(rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.98)),
+                repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(51, 65, 85, 0.1) 50px, rgba(51, 65, 85, 0.1) 51px),
+                repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(51, 65, 85, 0.1) 50px, rgba(51, 65, 85, 0.1) 51px);
+            z-index: -1;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 0.75rem 2rem;
+        }
+
+        .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), var(--teal));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .nav-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 0.25rem;
+            background: var(--secondary);
+            padding: 0.25rem;
+            border-radius: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            padding: 0.5rem 0.85rem;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-tab:hover {
+            color: var(--text);
+        }
+
+        .nav-tab.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Main Container */
+        .main {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        /* Section Styles */
+        .section {
+            display: none;
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(15, 118, 110, 0.25));
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: var(--accent-bright);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text), var(--accent-bright));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            line-height: 1.7;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Grid Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+
+        .grid-5 {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+        }
+
+        /* ISA-95 Pyramid */
+        .pyramid-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1.5rem;
+        }
+
+        .pyramid-level {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            border: 2px solid transparent;
+        }
+
+        .pyramid-level:hover {
+            transform: scale(1.02);
+        }
+
+        .pyramid-level.selected {
+            border-color: white;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .pyramid-level-4 { background: linear-gradient(135deg, var(--level-4), #7c3aed); width: 50%; }
+        .pyramid-level-3 { background: linear-gradient(135deg, var(--level-3), #2563eb); width: 65%; }
+        .pyramid-level-2 { background: linear-gradient(135deg, var(--level-2), #0891b2); width: 80%; }
+        .pyramid-level-1 { background: linear-gradient(135deg, var(--level-1), #059669); width: 95%; }
+        .pyramid-level-0 { background: linear-gradient(135deg, var(--level-0), #d97706); width: 100%; }
+
+        .pyramid-level-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .pyramid-level-info {
+            flex: 1;
+        }
+
+        .pyramid-level-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.15rem;
+        }
+
+        .pyramid-level-desc {
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .pyramid-level-system {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+        }
+
+        /* Part Cards */
+        .part-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-top: 4px solid;
+        }
+
+        .part-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .part-card.active {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .part-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .part-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .part-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Detail Panel */
+        .detail-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .detail-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .detail-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        /* Key Points */
+        .key-points {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .key-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.75rem;
+            background: var(--secondary);
+            border-radius: 8px;
+        }
+
+        .key-point-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .key-point-text {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Example Box */
+        .example-box {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(15, 118, 110, 0.12));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-top: 1rem;
+        }
+
+        .example-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--accent-bright);
+            margin-bottom: 0.75rem;
+        }
+
+        .example-content {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+
+        /* Sepasoft Card */
+        .sepasoft-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-top: 1rem;
+        }
+
+        .sepasoft-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .sepasoft-logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--success), var(--cyan));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+
+        .sepasoft-title {
+            font-weight: 600;
+            color: var(--success);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #0d1117;
+            border-radius: 10px;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+            margin-top: 0.75rem;
+        }
+
+        .code-comment { color: #8b949e; }
+        .code-keyword { color: #ff7b72; }
+        .code-string { color: #a5d6ff; }
+        .code-property { color: #79c0ff; }
+        .code-tag { color: #7ee787; }
+
+        /* Segment Diagram */
+        .segment-diagram {
+            background: var(--secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .segment-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .segment-node {
+            background: var(--card-bg);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+            min-width: 140px;
+            transition: all 0.3s;
+        }
+
+        .segment-node:hover {
+            border-color: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .segment-node-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .segment-node-title {
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .segment-node-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .segment-arrow {
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-table th {
+            background: var(--secondary);
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        .data-table td {
+            font-size: 0.9rem;
+        }
+
+        .data-table tr:hover td {
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-badge.part-1 { background: rgba(245, 158, 11, 0.2); color: var(--part-1); }
+        .status-badge.part-2 { background: rgba(59, 130, 246, 0.2); color: var(--part-2); }
+        .status-badge.part-3 { background: rgba(16, 185, 129, 0.2); color: var(--part-3); }
+        .status-badge.part-4 { background: rgba(139, 92, 246, 0.2); color: var(--part-4); }
+        .status-badge.part-5 { background: rgba(236, 72, 153, 0.2); color: var(--part-5); }
+
+        /* Tabs */
+        .tab-container {
+            margin-top: 1.5rem;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.25rem;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+
+        .tab-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Hierarchy Tree */
+        .hierarchy-tree {
+            background: var(--secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .tree-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            margin-left: 0;
+            transition: all 0.2s;
+        }
+
+        .tree-item.level-1 { margin-left: 1.5rem; }
+        .tree-item.level-2 { margin-left: 3rem; }
+        .tree-item.level-3 { margin-left: 4.5rem; }
+
+        .tree-item:hover {
+            border-color: var(--accent);
+        }
+
+        .tree-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .tree-info {
+            flex: 1;
+        }
+
+        .tree-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .tree-type {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Quiz */
+        .quiz-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .quiz-progress {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-progress-step {
+            flex: 1;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+        }
+
+        .quiz-progress-step.completed { background: var(--success); }
+        .quiz-progress-step.current { background: var(--accent); }
+
+        .quiz-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .quiz-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--secondary);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover { border-color: var(--accent); }
+        .quiz-option.selected { border-color: var(--accent); background: rgba(99, 102, 241, 0.1); }
+        .quiz-option.correct { border-color: var(--success); background: rgba(16, 185, 129, 0.1); }
+        .quiz-option.incorrect { border-color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+
+        .quiz-marker {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .quiz-option.selected .quiz-marker {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .quiz-feedback {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .quiz-feedback.show { display: block; }
+        .quiz-feedback.correct { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success); }
+        .quiz-feedback.incorrect { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--danger); }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        /* Section Header */
+        .section-header {
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .nav-tabs {
+                display: none;
+            }
+            
+            .grid-5 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+            
+            .grid-2, .grid-3, .grid-4, .grid-5 {
+                grid-template-columns: 1fr;
+            }
+            
+            .pyramid-level {
+                width: 100% !important;
+            }
+            
+            .segment-flow {
+                flex-direction: column;
+            }
+            
+            .segment-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        /* Interactive highlight */
+        .highlight {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(15, 118, 110, 0.25));
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        /* Callout */
+        .callout {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .callout-info {
+            background: rgba(99, 102, 241, 0.1);
+            border-left: 4px solid var(--accent);
+        }
+
+        .callout-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid var(--success);
+        }
+
+        .callout-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid var(--warning);
+        }
+
+        .callout-icon {
+            font-size: 1.2rem;
+        }
+
+        .callout-content {
+            flex: 1;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Animation */
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Mobile nav toggle */
+        .mobile-nav-toggle {
+            display: none;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--text);
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-nav-toggle {
+                display: block;
+            }
+        }
+
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            z-index: 999;
+        }
+
+        .mobile-nav.show {
+            display: block;
+        }
+
+        .mobile-nav-item {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: 0.9rem;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 8px;
+        }
+
+        .mobile-nav-item.active {
+            background: var(--accent);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+    
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-content">
+            <div class="nav-logo">
+                <div class="nav-logo-icon">ISA</div>
+                <div class="nav-title">ISA-95 · OSD Pharma Manufacturing</div>
+            </div>
+            <button class="mobile-nav-toggle" onclick="toggleMobileNav()">☰ Menu</button>
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showSection('overview')">Overview</button>
+                <button class="nav-tab" onclick="showSection('levels')">Levels</button>
+                <button class="nav-tab" onclick="showSection('parts')">Parts 1-5</button>
+                <button class="nav-tab" onclick="showSection('models')">Data Models</button>
+                <button class="nav-tab" onclick="showSection('segments')">Segments</button>
+                <button class="nav-tab" onclick="showSection('sepasoft')">Sepasoft</button>
+                <button class="nav-tab" onclick="showSection('examples')">Examples</button>
+                <button class="nav-tab" onclick="showSection('quiz')">Quiz</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <button class="mobile-nav-item active" onclick="showSection('overview'); toggleMobileNav()">Overview</button>
+        <button class="mobile-nav-item" onclick="showSection('levels'); toggleMobileNav()">Levels</button>
+        <button class="mobile-nav-item" onclick="showSection('parts'); toggleMobileNav()">Parts 1-5</button>
+        <button class="mobile-nav-item" onclick="showSection('models'); toggleMobileNav()">Data Models</button>
+        <button class="mobile-nav-item" onclick="showSection('segments'); toggleMobileNav()">Segments</button>
+        <button class="mobile-nav-item" onclick="showSection('sepasoft'); toggleMobileNav()">Sepasoft</button>
+        <button class="mobile-nav-item" onclick="showSection('examples'); toggleMobileNav()">Examples</button>
+        <button class="mobile-nav-item" onclick="showSection('quiz'); toggleMobileNav()">Quiz</button>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Overview Section -->
+        <section id="overview" class="section active">
+            <div class="hero">
+                <div class="hero-badge">
+                    <span>💊</span>
+                    <span>Helvion Pharma · Plant 2 Lakeworth — MES Fundamentals</span>
+                </div>
+                <h1>Understanding ISA-95 Standard</h1>
+                <p>The international standard for developing automated interfaces between enterprise and control systems. Master the foundation that shapes modern MES implementations — through the lens of an oral-solid-dose (tablet) plant.</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: linear-gradient(135deg, var(--accent), var(--teal));">🎯</div>
+                        <div>
+                            <div class="card-title">What is ISA-95?</div>
+                            <div class="card-subtitle">ANSI/ISA-95 (IEC 62264)</div>
+                        </div>
+                    </div>
+                    <div class="key-points">
+                        <div class="key-point">
+                            <div class="key-point-icon">📋</div>
+                            <div class="key-point-text">An international standard defining <strong>how enterprise systems (ERP)</strong> integrate with <strong>manufacturing control systems (MES/MOM)</strong></div>
+                        </div>
+                        <div class="key-point">
+                            <div class="key-point-icon">🏭</div>
+                            <div class="key-point-text">Provides <strong>consistent terminology and models</strong> for describing manufacturing operations across all industries</div>
+                        </div>
+                        <div class="key-point">
+                            <div class="key-point-icon">🔗</div>
+                            <div class="key-point-text">Creates a <strong>"common language"</strong> so different software systems from different vendors can work together</div>
+                        </div>
+                        <div class="key-point">
+                            <div class="key-point-icon">📊</div>
+                            <div class="key-point-text">Defines standardized <strong>data models</strong> for Equipment, Materials, Personnel, Operations, and Segments</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: linear-gradient(135deg, var(--success), var(--cyan));">💡</div>
+                        <div>
+                            <div class="card-title">Why Does It Matter?</div>
+                            <div class="card-subtitle">Real-world business value</div>
+                        </div>
+                    </div>
+                    <div class="key-points">
+                        <div class="key-point">
+                            <div class="key-point-icon">💊</div>
+                            <div class="key-point-text"><strong>Pharma Example:</strong> When SAP sends production order PO-77231 for 400 cases (1.6 M tablets) of Cardexil 10 mg, MES knows exactly what "Work Center" (Line 3), "Material" (CDX-10, batch B-CX-2417) and "Operation" (Blistering) mean — no translation needed</div>
+                        </div>
+                        <div class="key-point">
+                            <div class="key-point-icon">⚙️</div>
+                            <div class="key-point-text"><strong>Integration:</strong> Reduces custom integration code by <span class="highlight">60-70%</span> using standard interfaces like B2MML</div>
+                        </div>
+                        <div class="key-point">
+                            <div class="key-point-icon">🔄</div>
+                            <div class="key-point-text"><strong>Flexibility:</strong> Swap ERP or MES vendors without rebuilding all integrations from scratch</div>
+                        </div>
+                        <div class="key-point">
+                            <div class="key-point-icon">📈</div>
+                            <div class="key-point-text"><strong>Scalability:</strong> Add new plants or production lines following the same standard structure</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 1.5rem;">
+                <div class="card-header">
+                    <div class="card-icon" style="background: linear-gradient(135deg, var(--warning), var(--danger));">🔥</div>
+                    <div>
+                        <div class="card-title">The Universal Translator Analogy</div>
+                        <div class="card-subtitle">Why standardization matters</div>
+                    </div>
+                </div>
+                <div class="grid-2" style="margin-top: 1rem;">
+                    <div style="background: var(--secondary); border-radius: 12px; padding: 1.25rem;">
+                        <h4 style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">🏢 Without ISA-95</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Like a meeting where everyone speaks different languages</p>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                            <span class="status-badge part-1">SAP: "Work Center"</span>
+                            <span class="status-badge part-2">Oracle: "Resource"</span>
+                            <span class="status-badge part-3">Siemens: "Station"</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--danger);">❌ Confusion, custom mappings, integration nightmares, high maintenance costs</p>
+                    </div>
+                    <div style="background: var(--secondary); border-radius: 12px; padding: 1.25rem;">
+                        <h4 style="margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;">✅ With ISA-95</h4>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">Everyone uses the same terminology and structure</p>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.75rem;">
+                            <span class="status-badge part-3">Equipment = Work Unit</span>
+                            <span class="status-badge part-3">Material = Material Lot</span>
+                            <span class="status-badge part-3">Process = Segment</span>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--success);">✓ Clear communication, standard APIs, plug-and-play integrations</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Levels Section -->
+        <section id="levels" class="section">
+            <div class="section-header">
+                <h2>ISA-95 Functional Levels</h2>
+                <p>The Purdue Reference Model defines five hierarchical levels from shop floor to business systems</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="pyramid-container">
+                        <div class="pyramid-level pyramid-level-4" onclick="selectLevel(4)">
+                            <span class="pyramid-level-number">L4</span>
+                            <div class="pyramid-level-info">
+                                <div class="pyramid-level-title">Business Planning & Logistics</div>
+                                <div class="pyramid-level-desc">Days to months horizon</div>
+                            </div>
+                            <span class="pyramid-level-system">ERP</span>
+                        </div>
+                        <div class="pyramid-level pyramid-level-3 selected" onclick="selectLevel(3)">
+                            <span class="pyramid-level-number">L3</span>
+                            <div class="pyramid-level-info">
+                                <div class="pyramid-level-title">Manufacturing Operations</div>
+                                <div class="pyramid-level-desc">Minutes to days horizon</div>
+                            </div>
+                            <span class="pyramid-level-system">MES</span>
+                        </div>
+                        <div class="pyramid-level pyramid-level-2" onclick="selectLevel(2)">
+                            <span class="pyramid-level-number">L2</span>
+                            <div class="pyramid-level-info">
+                                <div class="pyramid-level-title">Monitoring & Supervisory</div>
+                                <div class="pyramid-level-desc">Seconds to minutes</div>
+                            </div>
+                            <span class="pyramid-level-system">SCADA</span>
+                        </div>
+                        <div class="pyramid-level pyramid-level-1" onclick="selectLevel(1)">
+                            <span class="pyramid-level-number">L1</span>
+                            <div class="pyramid-level-info">
+                                <div class="pyramid-level-title">Basic Control</div>
+                                <div class="pyramid-level-desc">Milliseconds to seconds</div>
+                            </div>
+                            <span class="pyramid-level-system">PLC</span>
+                        </div>
+                        <div class="pyramid-level pyramid-level-0" onclick="selectLevel(0)">
+                            <span class="pyramid-level-number">L0</span>
+                            <div class="pyramid-level-info">
+                                <div class="pyramid-level-title">Physical Process</div>
+                                <div class="pyramid-level-desc">Real-time continuous</div>
+                            </div>
+                            <span class="pyramid-level-system">FIELD</span>
+                        </div>
+                    </div>
+                    <div class="callout callout-info" style="margin-top: 1rem;">
+                        <div class="callout-icon">💡</div>
+                        <div class="callout-content">
+                            <strong>MES operates at Level 3</strong> — the critical junction bridging business planning (Level 4) with shop floor execution (Levels 0-2). This is where ISA-95 defines the most detailed models.
+                        </div>
+                    </div>
+                </div>
+
+                <div id="level-detail" class="card">
+                    <!-- Dynamic content based on selected level -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Parts 1-5 Section -->
+        <section id="parts" class="section">
+            <div class="section-header">
+                <h2>ISA-95 Standard Parts (1-5)</h2>
+                <p>The standard is organized into five parts, each building upon the previous</p>
+            </div>
+
+            <div class="grid-5">
+                <div class="part-card" style="border-top-color: var(--part-1);" onclick="selectPart(1, this)">
+                    <div class="part-number" style="color: var(--part-1);">1</div>
+                    <div class="part-title">Models & Terminology</div>
+                    <div class="part-desc">Hierarchy levels and functional models</div>
+                </div>
+                <div class="part-card" style="border-top-color: var(--part-2);" onclick="selectPart(2, this)">
+                    <div class="part-number" style="color: var(--part-2);">2</div>
+                    <div class="part-title">Object Attributes</div>
+                    <div class="part-desc">Data structures and attributes</div>
+                </div>
+                <div class="part-card active" style="border-top-color: var(--part-3);" onclick="selectPart(3, this)">
+                    <div class="part-number" style="color: var(--part-3);">3</div>
+                    <div class="part-title">Activity Models</div>
+                    <div class="part-desc">MOM activities and operations</div>
+                </div>
+                <div class="part-card" style="border-top-color: var(--part-4);" onclick="selectPart(4, this)">
+                    <div class="part-number" style="color: var(--part-4);">4</div>
+                    <div class="part-title">Object Models</div>
+                    <div class="part-desc">MOM object model details</div>
+                </div>
+                <div class="part-card" style="border-top-color: var(--part-5);" onclick="selectPart(5, this)">
+                    <div class="part-number" style="color: var(--part-5);">5</div>
+                    <div class="part-title">B2MML Transactions</div>
+                    <div class="part-desc">XML schemas for integration</div>
+                </div>
+            </div>
+
+            <div id="part-detail" class="detail-panel">
+                <!-- Dynamic content based on selected part -->
+            </div>
+        </section>
+
+        <!-- Data Models Section -->
+        <section id="models" class="section">
+            <div class="section-header">
+                <h2>ISA-95 Data Models</h2>
+                <p>Core information models that define how manufacturing data is structured and exchanged</p>
+            </div>
+
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showModelTab('equipment', this)">🏭 Equipment</button>
+                <button class="tab-btn" onclick="showModelTab('material', this)">📦 Material</button>
+                <button class="tab-btn" onclick="showModelTab('personnel', this)">👷 Personnel</button>
+                <button class="tab-btn" onclick="showModelTab('operations', this)">📋 Operations</button>
+                <button class="tab-btn" onclick="showModelTab('physical', this)">🔧 Physical Asset</button>
+            </div>
+
+            <div id="model-tabs-content">
+                <!-- Equipment Model Tab -->
+                <div id="model-equipment" class="tab-content active">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon" style="background: var(--accent);">🏭</div>
+                                <div>
+                                    <div class="card-title">Equipment Hierarchy Model</div>
+                                    <div class="card-subtitle">WHERE production happens (Role-based)</div>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                The Equipment Model defines the <strong>logical/functional organization</strong> of your plant. It represents roles that equipment plays, not the physical machines themselves.
+                            </p>
+                            <div class="hierarchy-tree">
+                                <div class="tree-item">
+                                    <div class="tree-icon" style="background: var(--level-4);">🏢</div>
+                                    <div class="tree-info">
+                                        <div class="tree-name">Enterprise</div>
+                                        <div class="tree-type">Helvion Pharma</div>
+                                    </div>
+                                </div>
+                                <div class="tree-item level-1">
+                                    <div class="tree-icon" style="background: var(--level-3);">🏭</div>
+                                    <div class="tree-info">
+                                        <div class="tree-name">Site</div>
+                                        <div class="tree-type">Plant 2 · Lakeworth</div>
+                                    </div>
+                                </div>
+                                <div class="tree-item level-2">
+                                    <div class="tree-icon" style="background: var(--level-2);">🔧</div>
+                                    <div class="tree-info">
+                                        <div class="tree-name">Area</div>
+                                        <div class="tree-type">Packaging — Blistering, Cartoning & Serialization</div>
+                                    </div>
+                                </div>
+                                <div class="tree-item level-3">
+                                    <div class="tree-icon" style="background: var(--level-1);">⚙️</div>
+                                    <div class="tree-info">
+                                        <div class="tree-name">Work Center (Line)</div>
+                                        <div class="tree-type">Line 3 (Blister–Cartoner)</div>
+                                    </div>
+                                </div>
+                                <div class="tree-item level-3">
+                                    <div class="tree-icon" style="background: var(--level-0);">💊</div>
+                                    <div class="tree-info">
+                                        <div class="tree-name">Work Unit (Cell)</div>
+                                        <div class="tree-type">BL3 — Blister Forming, Filling & Sealing (400 blisters/min)</div>
+                                    </div>
+                                </div>
+                                <div class="tree-item level-3">
+                                    <div class="tree-icon" style="background: var(--level-0);">🏷️</div>
+                                    <div class="tree-info">
+                                        <div class="tree-name">Work Unit (Cell)</div>
+                                        <div class="tree-type">CR3 — Cartoner + FMD Serialization Station (200 cartons/min)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="callout callout-info" style="margin-top: 1rem; margin-bottom: 0;">
+                                <div class="callout-icon">🧪</div>
+                                <div class="callout-content">
+                                    <strong>The sibling Area:</strong> the same Site also holds <em>OSD Manufacturing</em> — dispensing (DSP1) → granulation (GRN1) → fluid-bed drying (FBD2) → blending (BLD1) → compression (PR3) → coating (CO1). That Area is modelled the ISA-88 way (process cells, units, recipes, eBR); Packaging is modelled the discrete way (lines, cells, OEE). One equipment hierarchy, two operating philosophies.
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="card">
+                                <h4 style="margin-bottom: 1rem;">Key Concepts</h4>
+                                <div class="key-points">
+                                    <div class="key-point">
+                                        <div class="key-point-icon" style="background: var(--purple);">📋</div>
+                                        <div class="key-point-text"><strong>Equipment Class:</strong> Template defining common properties (e.g., "Blister Machine" class with rated speed, OEE targets, PM intervals, camera-inspection capability)</div>
+                                    </div>
+                                    <div class="key-point">
+                                        <div class="key-point-icon" style="background: var(--cyan);">🎯</div>
+                                        <div class="key-point-text"><strong>Equipment:</strong> Specific instance of a class (e.g., "BL3" on Line 3 in Packaging — its potent twin "BL5" lives on segregated Line 5)</div>
+                                    </div>
+                                    <div class="key-point">
+                                        <div class="key-point-icon" style="background: var(--success);">📊</div>
+                                        <div class="key-point-text"><strong>Equipment Capability:</strong> What the equipment can do (blistering, cartoning + serialization, compression, film coating)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sepasoft-card">
+                                <div class="sepasoft-header">
+                                    <div class="sepasoft-logo">S</div>
+                                    <div>
+                                        <div class="sepasoft-title">Sepasoft Equipment Manager</div>
+                                    </div>
+                                </div>
+                                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                                    In Sepasoft MES Object Editor, you define your equipment hierarchy:
+                                </p>
+                                <div class="code-block">
+                                    <span class="code-comment">// Equipment Path in Sepasoft</span><br>
+                                    <span class="code-property">Path:</span> <span class="code-string">"Helvion/Plant2/Packaging/Line3/BL3"</span><br><br>
+                                    <span class="code-comment">// Equipment Properties</span><br>
+                                    <span class="code-property">OEE_Target:</span> <span class="code-string">63.5% (journey from 45.0%)</span><br>
+                                    <span class="code-property">Rated_Speed:</span> <span class="code-string">400 blisters/min</span><br>
+                                    <span class="code-property">OPC_UA:</span> <span class="code-string">opc.tcp://pr3-plc.hp2.local:4840 (press) · EG-PKG-01 (cameras)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Material Model Tab -->
+                <div id="model-material" class="tab-content">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon" style="background: var(--warning);">📦</div>
+                                <div>
+                                    <div class="card-title">Material Model</div>
+                                    <div class="card-subtitle">WHAT is being produced and consumed</div>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                Tracks materials from raw components through finished goods with full genealogy for traceability.
+                            </p>
+                            <div class="segment-diagram">
+                                <div class="segment-flow">
+                                    <div class="segment-node">
+                                        <div class="segment-node-icon">📝</div>
+                                        <div class="segment-node-title">Material Definition</div>
+                                        <div class="segment-node-desc">Part Number / SKU</div>
+                                    </div>
+                                    <div class="segment-arrow">→</div>
+                                    <div class="segment-node">
+                                        <div class="segment-node-icon">📦</div>
+                                        <div class="segment-node-title">Material Lot</div>
+                                        <div class="segment-node-desc">Batch B-CX-2417 / Blend Lot BLND-1834</div>
+                                    </div>
+                                    <div class="segment-arrow">→</div>
+                                    <div class="segment-node">
+                                        <div class="segment-node-icon">🏷️</div>
+                                        <div class="segment-node-title">Material Sublot</div>
+                                        <div class="segment-node-desc">Carton UI / Case / Pallet SSCC</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="example-box">
+                                <div class="example-header">💊 Pharma Traceability Example</div>
+                                <div class="example-content">
+                                    <strong>EU FMD Unique-Identifier Recall Scenario:</strong><br>
+                                    A pharmacy scans a Cardexil 10 mg carton at dispense and reports a leaking blister pocket. The carton's DataMatrix UI (GTIN 00359123000108 · SN 4T7K9DQ2CX41 · batch B-CX-2417 · exp 2028-06) travels back through the national verification system and the EU Hub to Helvion's L3 serialization manager HP2-SER.<br><br>
+                                    <strong>Without ISA-95:</strong> Recall the whole batch — 400 cases, 80,000 cartons, 1.6 M tablets — "just in case"<br>
+                                    <strong>With Material Model:</strong> Serial → blister lot → lidding-foil lot FL-2216, reel 4 (a bad splice) → the 22 minutes it ran on BL3 → 22 min × 400 blisters/min ÷ 2 blisters/carton = <strong>4,400 carton UIs (22 cases)</strong> — one serial range, pulled through the EU Hub<br>
+                                    <strong>Result:</strong> 378 of 400 cases stay released; the recall is a serial-range decommission, not a market-wide withdrawal
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h4 style="margin-bottom: 1rem;">Material Model Components</h4>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ISA-95 Term</th>
+                                        <th>Pharma Example</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>Material Definition</strong></td>
+                                        <td>CDX-10 — Cardexil 10 mg film-coated tablet (carton GTIN-14 00359123000108)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Material Class</strong></td>
+                                        <td>COATED_TABLET (shared properties: weight, hardness, LOD, dissolution spec)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Material Lot</strong></td>
+                                        <td>B-CX-2417 (coated batch from blend lot BLND-1834, press run PR3-0724-A)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Material Sublot</strong></td>
+                                        <td>Carton UI: (01)00359123000108 (21)4T7K9DQ2CX41 (10)B-CX-2417 (17)280630 — one DataMatrix per carton</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Material Property</strong></td>
+                                        <td>Weight 250 mg ±5 %, hardness 110 N, LOD 2.0 % (window 1.5–2.5 %)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="sepasoft-card">
+                                <div class="sepasoft-header">
+                                    <div class="sepasoft-logo">S</div>
+                                    <div>
+                                        <div class="sepasoft-title">Sepasoft Track & Trace</div>
+                                    </div>
+                                </div>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                                    Material Manager handles Material Definitions, Lots, Sublots, and provides full genealogy linking API, excipient, binder, film, foil, leaflet and carton-blank lots to every carton UI — the material half of the electronic batch record.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personnel Model Tab -->
+                <div id="model-personnel" class="tab-content">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon" style="background: var(--purple);">👷</div>
+                                <div>
+                                    <div class="card-title">Personnel Model</div>
+                                    <div class="card-subtitle">WHO performs the work</div>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                Manages worker qualifications, certifications, and role assignments. Critical for compliance (GMP, EU Annex 11 / 21 CFR Part 11 e-signatures, potent-product handling).
+                            </p>
+                            <div class="key-points">
+                                <div class="key-point">
+                                    <div class="key-point-icon" style="background: var(--purple);">👤</div>
+                                    <div class="key-point-text"><strong>Person:</strong> Individual worker (Employee #, Badge ID)</div>
+                                </div>
+                                <div class="key-point">
+                                    <div class="key-point-icon" style="background: var(--accent);">👥</div>
+                                    <div class="key-point-text"><strong>Personnel Class:</strong> Role category (Operator, Technician, QC Inspector)</div>
+                                </div>
+                                <div class="key-point">
+                                    <div class="key-point-icon" style="background: var(--success);">✅</div>
+                                    <div class="key-point-text"><strong>Qualification:</strong> Certified skills (Blister Machine Operation, Potent-Product Handling, Lockout/Tagout)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h4 style="margin-bottom: 1rem;">Example: Line 3 Packaging & QC Personnel</h4>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Person</th>
+                                        <th>Class</th>
+                                        <th>Qualifications</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Mei (EMP-2231) — Blister 3</td>
+                                        <td><span class="status-badge part-3">OPERATOR</span></td>
+                                        <td>Blister Machine Operation (BL3), FMD Serialization Station, GMP Line Clearance</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Petr (EMP-2607) — Maintenance</td>
+                                        <td><span class="status-badge part-2">TECHNICIAN</span></td>
+                                        <td>Press Tooling Change, Foil Splicer Setup, Lockout/Tagout</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Lucia (EMP-2914) — QC Lab</td>
+                                        <td><span class="status-badge part-4">QC_ANALYST</span></td>
+                                        <td>LOD Oven / Karl Fischer, Dissolution, e-Signature Authority (Annex 11)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="callout callout-warning">
+                                <div class="callout-icon">⚠️</div>
+                                <div class="callout-content">
+                                    <strong>GMP & Annex 11 Requirement:</strong> Certain operations require certified personnel. MES can enforce that only potent-product-trained operators run the Zentrix 50 mg (ZTX-50) changeover on Line 5, and only e-sig-authorized analysts release an in-process check — every eBR entry carries who, what, when and why.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Operations Model Tab -->
+                <div id="model-operations" class="tab-content">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon" style="background: var(--success);">📋</div>
+                                <div>
+                                    <div class="card-title">Operations Model</div>
+                                    <div class="card-subtitle">HOW products are made</div>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                Defines routes, schedules, and captures production performance. The heart of MES operations.
+                            </p>
+                            <div class="segment-diagram">
+                                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                    <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: var(--card-bg); border-radius: 8px;">
+                                        <div style="width: 36px; height: 36px; background: var(--level-4); border-radius: 8px; display: flex; align-items: center; justify-content: center;">📝</div>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; font-size: 0.9rem;">Operations Definition</div>
+                                            <div style="font-size: 0.8rem; color: var(--text-muted);">"How to make Cardexil 10 mg" — master recipe R-CDX-07 v12</div>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: center; color: var(--accent);">↓</div>
+                                    <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: var(--card-bg); border-radius: 8px;">
+                                        <div style="width: 36px; height: 36px; background: var(--level-3); border-radius: 8px; display: flex; align-items: center; justify-content: center;">📅</div>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; font-size: 0.9rem;">Operations Schedule</div>
+                                            <div style="font-size: 0.8rem; color: var(--text-muted);">PO-77231: Make 400 cases (1.6 M tablets) of CDX-10 by Oct 2</div>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: center; color: var(--accent);">↓</div>
+                                    <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: var(--card-bg); border-radius: 8px;">
+                                        <div style="width: 36px; height: 36px; background: var(--level-2); border-radius: 8px; display: flex; align-items: center; justify-content: center;">⚙️</div>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; font-size: 0.9rem;">Operations Request</div>
+                                            <div style="font-size: 0.8rem; color: var(--text-muted);">Execute batch B-CX-2417 on Line 3, Shift A, starting 06:00</div>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: center; color: var(--success);">↓</div>
+                                    <div style="display: flex; align-items: center; gap: 1rem; padding: 0.75rem; background: var(--card-bg); border-radius: 8px;">
+                                        <div style="width: 36px; height: 36px; background: var(--level-1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">📊</div>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; font-size: 0.9rem;">Operations Response/Performance</div>
+                                            <div style="font-size: 0.8rem; color: var(--text-muted);">Completed 396/400 cases (1,584,000 tablets), OEE 63.5%, 1.0% loss</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h4 style="margin-bottom: 1rem;">Sepasoft Module Mapping</h4>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ISA-95 Concept</th>
+                                        <th>Sepasoft Module</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Operations Definition</td>
+                                        <td><span class="status-badge part-3">Recipe Manager</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Operations Schedule</td>
+                                        <td><span class="status-badge part-2">OEE Module (Work Orders)</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Operations Performance</td>
+                                        <td><span class="status-badge part-4">OEE + SPC</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="example-box">
+                                <div class="example-header">🔄 ERP Integration Flow</div>
+                                <div class="example-content">
+                                    <strong>1.</strong> SAP sends Production Order PO-77231 (Operations Schedule); Cadence APS releases the sequence — the MES never re-sequences<br>
+                                    <strong>2.</strong> MES converts to Work Order with Segments (compression → coating → blistering → cartoning/serialization → aggregation)<br>
+                                    <strong>3.</strong> Shop floor executes operations; every step lands in the eBR<br>
+                                    <strong>4.</strong> MES sends confirmations back (Operations Response) — and the batch is only sellable once QP certificate QP-2417 is signed and the FMD upload is acknowledged
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Physical Asset Model Tab -->
+                <div id="model-physical" class="tab-content">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon" style="background: var(--cyan);">🔧</div>
+                                <div>
+                                    <div class="card-title">Physical Asset Model</div>
+                                    <div class="card-subtitle">Actual physical machines and devices</div>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                Represents the <strong>actual machines</strong> - distinct from the Equipment Model which is role-based.
+                            </p>
+                            <div class="callout callout-info">
+                                <div class="callout-icon">🔑</div>
+                                <div class="callout-content">
+                                    <strong>Key Distinction:</strong><br>
+                                    <strong>Equipment</strong> = Role/Function ("BL3")<br>
+                                    <strong>Physical Asset</strong> = Actual machine (blister machine Serial# BLM-2019-3316)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h4 style="margin-bottom: 1rem;">Why Separate Models?</h4>
+                            <div class="grid-2" style="gap: 1rem;">
+                                <div style="background: var(--secondary); border-radius: 8px; padding: 1rem;">
+                                    <h5 style="margin-bottom: 0.5rem;">Equipment View</h5>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">Production sees: "BL3"</p>
+                                    <p style="font-size: 0.8rem; margin-top: 0.5rem;">Focus: What function it performs</p>
+                                </div>
+                                <div style="background: var(--secondary); border-radius: 8px; padding: 1rem;">
+                                    <h5 style="margin-bottom: 0.5rem;">Physical Asset View</h5>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">Maintenance sees: Blister machine SN# BLM-2019-3316</p>
+                                    <p style="font-size: 0.8rem; margin-top: 0.5rem;">Focus: Service history, spare parts</p>
+                                </div>
+                            </div>
+                            <div class="example-box">
+                                <div class="example-header">🔄 Blister Machine Replacement Scenario</div>
+                                <div class="example-content">
+                                    When the blister machine is replaced after a major rebuild, the <strong>Equipment</strong> ("BL3") stays the same in MES, but the <strong>Physical Asset</strong> changes from SN# BLM-2019-3316 to SN# BLM-2025-0142. Recipes, OEE history and the Sepasoft path stay put; the new asset goes through change control and IQ/OQ re-qualification before it may run a GMP batch — and the eBR records which physical asset produced every lot.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Segments Section (NEW) -->
+        <section id="segments" class="section">
+            <div class="section-header">
+                <h2>ISA-95 Segments</h2>
+                <p>Understanding Process Segments, Product Segments, and how they define manufacturing operations</p>
+            </div>
+
+            <div class="callout callout-warning" style="margin-bottom: 1.5rem;">
+                <div class="callout-icon">⚠️</div>
+                <div class="callout-content">
+                    <strong>Critical Concept:</strong> Segments are fundamental building blocks in ISA-95 that define HOW operations are performed. They're essential for recipe management, scheduling, and performance tracking.
+                </div>
+            </div>
+
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="showSegmentTab('process', this)">🔄 Process Segment</button>
+                <button class="tab-btn" onclick="showSegmentTab('product', this)">📦 Product Segment</button>
+                <button class="tab-btn" onclick="showSegmentTab('operations', this)">📋 Operations Segment</button>
+                <button class="tab-btn" onclick="showSegmentTab('relationship', this)">🔗 Relationships</button>
+            </div>
+
+            <div id="segment-tabs-content">
+                <!-- Process Segment Tab -->
+                <div id="segment-process" class="tab-content active">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon" style="background: linear-gradient(135deg, var(--accent), var(--teal));">🔄</div>
+                                <div>
+                                    <div class="card-title">Process Segment</div>
+                                    <div class="card-subtitle">The "HOW" of manufacturing - Independent of product</div>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                A Process Segment defines a <strong>step or phase of production</strong> that is independent of any specific product. It describes the capabilities and resources needed.
+                            </p>
+                            <div class="key-points">
+                                <div class="key-point">
+                                    <div class="key-point-icon">🏭</div>
+                                    <div class="key-point-text"><strong>Equipment Requirements:</strong> What equipment is needed (Blister Machine, Cartoner + Serialization Station)</div>
+                                </div>
+                                <div class="key-point">
+                                    <div class="key-point-icon">👷</div>
+                                    <div class="key-point-text"><strong>Personnel Requirements:</strong> Skills/certifications needed (Blister Cert, Potent-Product Handling)</div>
+                                </div>
+                                <div class="key-point">
+                                    <div class="key-point-icon">📦</div>
+                                    <div class="key-point-text"><strong>Material Requirements:</strong> Types of materials consumed/produced</div>
+                                </div>
+                                <div class="key-point">
+                                    <div class="key-point-icon">⏱️</div>
+                                    <div class="key-point-text"><strong>Duration:</strong> Expected time to complete the segment</div>
+                                </div>
+                            </div>
+                            <div class="example-box">
+                                <div class="example-header">💊 Pharma Process Segment Example</div>
+                                <div class="example-content">
+                                    <strong>Process Segment: "Blistering"</strong><br><br>
+                                    This segment defines the general capability to form, fill and seal blisters — it is NOT tied to any specific product or strength.<br><br>
+                                    • Equipment: Any Blister Machine-class unit with fill/empty-pocket camera (BL3 or BL5)<br>
+                                    • Personnel: Operator with Blister Machine Certification<br>
+                                    • Materials: Bulk coated tablets + forming film + lidding foil (input), Blisters (output)<br>
+                                    • Rate: up to 400 blisters per minute
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h4 style="margin-bottom: 1rem;">Process Segment Structure</h4>
+                            <div class="segment-diagram">
+                                <div style="background: var(--card-bg); border: 2px solid var(--accent); border-radius: 12px; padding: 1.25rem;">
+                                    <h5 style="color: var(--accent); margin-bottom: 1rem;">Process Segment: "Fluid-Bed Drying" (the ISA-88 side)</h5>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                        <div style="background: var(--secondary); padding: 0.75rem; border-radius: 8px;">
+                                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">EQUIPMENT SPEC</p>
+                                            <p style="font-size: 0.85rem;">Fluid-Bed Dryer + inline NIR moisture probe (FBD2)</p>
+                                        </div>
+                                        <div style="background: var(--secondary); padding: 0.75rem; border-radius: 8px;">
+                                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">PERSONNEL SPEC</p>
+                                            <p style="font-size: 0.85rem;">Granulation Operator + e-Sig Authority</p>
+                                        </div>
+                                        <div style="background: var(--secondary); padding: 0.75rem; border-radius: 8px;">
+                                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">MATERIAL IN</p>
+                                            <p style="font-size: 0.85rem;">Wet Granulate (granulation batch GB-)</p>
+                                        </div>
+                                        <div style="background: var(--secondary); padding: 0.75rem; border-radius: 8px;">
+                                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">MATERIAL OUT</p>
+                                            <p style="font-size: 0.85rem;">Dried Granulate</p>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(99, 102, 241, 0.1); border-radius: 8px;">
+                                        <p style="font-size: 0.8rem;"><strong>Parameters:</strong> Inlet air 60–70 °C, LOD target 2.0 % (window 1.5–2.5 %), endpoint by inline NIR — audited hours later by the QC lab's LOD oven / Karl Fischer</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sepasoft-card">
+                                <div class="sepasoft-header">
+                                    <div class="sepasoft-logo">S</div>
+                                    <div>
+                                        <div class="sepasoft-title">Sepasoft Recipe Manager</div>
+                                    </div>
+                                </div>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">
+                                    Process Segments map to <strong>Recipe Phases</strong> in Sepasoft. Each phase defines equipment, parameters, and expected durations.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Segment Tab -->
+                <div id="segment-product" class="tab-content">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon" style="background: linear-gradient(135deg, var(--warning), var(--danger));">📦</div>
+                                <div>
+                                    <div class="card-title">Product Segment</div>
+                                    <div class="card-subtitle">Product-specific version of a Process Segment</div>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                A Product Segment is the <strong>product-specific implementation</strong> of a Process Segment. It defines exactly how to make a specific product using the general process capability.
+                            </p>
+                            <div class="callout callout-info">
+                                <div class="callout-icon">💡</div>
+                                <div class="callout-content">
+                                    <strong>Think of it this way:</strong><br>
+                                    Process Segment = "I can blister tablets" (capability)<br>
+                                    Product Segment = "Blister Cardexil 10 mg with these exact parameters"
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h4 style="margin-bottom: 1rem;">Process vs Product Segment</h4>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Aspect</th>
+                                        <th>Process Segment</th>
+                                        <th>Product Segment</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Scope</td>
+                                        <td>Generic capability</td>
+                                        <td>Product-specific</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Example</td>
+                                        <td>"Blistering"</td>
+                                        <td>"Cardexil 10 mg Blistering Op 20"</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Parameters</td>
+                                        <td>Ranges/defaults</td>
+                                        <td>Exact values</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Materials</td>
+                                        <td>Material classes</td>
+                                        <td>Specific SKUs / batch numbers</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Reusability</td>
+                                        <td>High (many products)</td>
+                                        <td>Low (one product)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="example-box">
+                                <div class="example-header">💊 Product Segment Example</div>
+                                <div class="example-content">
+                                    <strong>Product: Cardexil 10 mg film-coated tablet (CDX-10)</strong><br>
+                                    <strong>Product Segment: "Cardexil 10 mg Blistering"</strong><br><br>
+                                    Based on: Process Segment "Blistering"<br>
+                                    Specific Material: Coated tablets of batch B-CX-2417 + PVC/PVDC forming film + Al lidding foil (lot FL-2216)<br>
+                                    Format: 10 tablets per blister, 2 blisters per carton (not a range)<br>
+                                    Seal Temperature: 180 °C exactly<br>
+                                    Master Recipe: R-CDX-07 v12
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Operations Segment Tab -->
+                <div id="segment-operations" class="tab-content">
+                    <div class="grid-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-icon" style="background: linear-gradient(135deg, var(--success), var(--cyan));">📋</div>
+                                <div>
+                                    <div class="card-title">Operations Segment</div>
+                                    <div class="card-subtitle">Execution-time version of segments</div>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                                An Operations Segment is the <strong>runtime instance</strong> used in scheduling and execution. It takes Product Segment definitions and applies them to specific work orders.
+                            </p>
+                            <div class="segment-diagram">
+                                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <div style="flex: 1; padding: 1rem; background: rgba(139, 92, 246, 0.2); border: 1px solid var(--purple); border-radius: 8px;">
+                                            <p style="font-size: 0.8rem; color: var(--purple); font-weight: 600;">DEFINITION TIME</p>
+                                            <p style="font-size: 0.9rem;">Process Segment → Product Segment</p>
+                                        </div>
+                                    </div>
+                                    <div style="text-align: center; color: var(--accent);">↓</div>
+                                    <div style="display: flex; align-items: center; gap: 1rem;">
+                                        <div style="flex: 1; padding: 1rem; background: rgba(16, 185, 129, 0.2); border: 1px solid var(--success); border-radius: 8px;">
+                                            <p style="font-size: 0.8rem; color: var(--success); font-weight: 600;">EXECUTION TIME</p>
+                                            <p style="font-size: 0.9rem;">Operations Segment (in Work Order)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <h4 style="margin-bottom: 1rem;">Segment Hierarchy Flow</h4>
+                            <div class="code-block">
+                                <span class="code-comment">// 1. Process Segment (Generic)</span><br>
+                                <span class="code-keyword">ProcessSegment:</span> <span class="code-string">"Blistering"</span><br>
+                                <span class="code-property">  Equipment:</span> <span class="code-string">BlisterMachineClass</span><br>
+                                <span class="code-property">  Rate:</span> <span class="code-string">up to 400 blisters/min</span><br><br>
+
+                                <span class="code-comment">// 2. Product Segment (Product-Specific)</span><br>
+                                <span class="code-keyword">ProductSegment:</span> <span class="code-string">"CDX10_Blistering"</span><br>
+                                <span class="code-property">  BasedOn:</span> <span class="code-string">Blistering</span><br>
+                                <span class="code-property">  Material:</span> <span class="code-string">CDX-10</span><br>
+                                <span class="code-property">  Format:</span> <span class="code-string">10 tablets/blister · seal 180 °C</span><br><br>
+
+                                <span class="code-comment">// 3. Operations Segment (Runtime)</span><br>
+                                <span class="code-keyword">WorkOrder:</span> <span class="code-string">PO-77231</span><br>
+                                <span class="code-keyword">OperationsSegment:</span><br>
+                                <span class="code-property">  BasedOn:</span> <span class="code-string">CDX10_Blistering</span><br>
+                                <span class="code-property">  Equipment:</span> <span class="code-string">BL3 (actual)</span><br>
+                                <span class="code-property">  Batch:</span> <span class="code-string">B-CX-2417</span><br>
+                                <span class="code-property">  StartTime:</span> <span class="code-string">2026-09-28 06:00</span><br>
+                                <span class="code-property">  Quantity:</span> <span class="code-string">160,000 blisters (1.6 M tablets = 400 cases)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Relationships Tab -->
+                <div id="segment-relationship" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-icon" style="background: linear-gradient(135deg, var(--pink), var(--purple));">🔗</div>
+                            <div>
+                                <div class="card-title">Segment Relationships & Dependencies</div>
+                                <div class="card-subtitle">How segments connect to form complete production flows</div>
+                            </div>
+                        </div>
+                        
+                        <div class="segment-diagram" style="margin-top: 1rem;">
+                            <h5 style="margin-bottom: 1rem; color: var(--accent);">OSD Tablet Plant — Segment Flow</h5>
+                            <div class="segment-flow">
+                                <div class="segment-node" style="border-color: var(--warning);">
+                                    <div class="segment-node-icon">⚖️</div>
+                                    <div class="segment-node-title">Dispensing</div>
+                                    <div class="segment-node-desc">PS-001</div>
+                                </div>
+                                <div class="segment-arrow">→</div>
+                                <div class="segment-node" style="border-color: var(--accent);">
+                                    <div class="segment-node-icon">🌀</div>
+                                    <div class="segment-node-title">Granulation & Drying</div>
+                                    <div class="segment-node-desc">PS-002</div>
+                                </div>
+                                <div class="segment-arrow">→</div>
+                                <div class="segment-node" style="border-color: var(--success);">
+                                    <div class="segment-node-icon">💊</div>
+                                    <div class="segment-node-title">Compression & Coating</div>
+                                    <div class="segment-node-desc">PS-003</div>
+                                </div>
+                                <div class="segment-arrow">→</div>
+                                <div class="segment-node" style="border-color: var(--purple);">
+                                    <div class="segment-node-icon">📦</div>
+                                    <div class="segment-node-title">Blistering & Cartoning</div>
+                                    <div class="segment-node-desc">PS-004</div>
+                                </div>
+                                <div class="segment-arrow">→</div>
+                                <div class="segment-node" style="border-color: var(--cyan);">
+                                    <div class="segment-node-icon">✅</div>
+                                    <div class="segment-node-title">Aggregation & QP Release</div>
+                                    <div class="segment-node-desc">PS-005</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="segment-diagram" style="margin-top: 1.5rem;">
+                            <h5 style="margin-bottom: 1rem; color: var(--accent);">Two Worlds, One Plant — Where the Segments Live</h5>
+                            <div class="grid-2" style="gap: 1rem;">
+                                <div style="background: var(--secondary); border: 1px solid var(--accent); border-radius: 12px; padding: 1rem;">
+                                    <p style="font-size: 0.75rem; color: var(--accent-bright); font-weight: 600; margin-bottom: 0.75rem;">UPSTREAM — BATCH (ISA-88 · recipe · eBR · kg and %)</p>
+                                    <div class="segment-flow">
+                                        <div class="segment-node" style="border-color: var(--warning);">
+                                            <div class="segment-node-icon">⚖️</div>
+                                            <div class="segment-node-title">Dispense</div>
+                                        </div>
+                                        <div class="segment-arrow">→</div>
+                                        <div class="segment-node" style="border-color: var(--warning);">
+                                            <div class="segment-node-icon">🌀</div>
+                                            <div class="segment-node-title">Granulate, Dry & Blend</div>
+                                        </div>
+                                        <div class="segment-arrow">→</div>
+                                        <div class="segment-node" style="border-color: var(--warning);">
+                                            <div class="segment-node-icon">💊</div>
+                                            <div class="segment-node-title">Compress & Coat</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="background: var(--secondary); border: 1px solid var(--cyan); border-radius: 12px; padding: 1rem;">
+                                    <p style="font-size: 0.75rem; color: var(--cyan); font-weight: 600; margin-bottom: 0.75rem;">PACKAGING — DISCRETE (OEE · serialization · units/min)</p>
+                                    <div class="segment-flow">
+                                        <div class="segment-node" style="border-color: var(--cyan);">
+                                            <div class="segment-node-icon">📦</div>
+                                            <div class="segment-node-title">Blister (BL3)</div>
+                                        </div>
+                                        <div class="segment-arrow">→</div>
+                                        <div class="segment-node" style="border-color: var(--cyan);">
+                                            <div class="segment-node-icon">🏷️</div>
+                                            <div class="segment-node-title">Carton & Serialize (CR3)</div>
+                                        </div>
+                                        <div class="segment-arrow">→</div>
+                                        <div class="segment-node" style="border-color: var(--cyan);">
+                                            <div class="segment-node-icon">🏗️</div>
+                                            <div class="segment-node-title">Case & Palletize (CP1/PZ1)</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="callout callout-info" style="margin-top: 1rem;">
+                                <div class="callout-icon">🛢️</div>
+                                <div class="callout-content">
+                                    <strong>BULK-TABLET HOLD — where batch ends and discrete begins.</strong> Upstream runs as ISA-88 batches (recipe R-CDX-07 v12, phases, an electronic batch record, kilograms and LOD %); bulk coated tablets of batch B-CX-2417 wait in drums until packaging release. From BL3 onward everything is countable — blisters, cartons, bundles, cases, one pallet SSCC — and every carton carries its own FMD identity. One MES must speak both languages: the batch record upstream, OEE and serialization downstream.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid-2" style="margin-top: 1.5rem;">
+                            <div>
+                                <h5 style="margin-bottom: 1rem;">Segment Dependency Types</h5>
+                                <div class="key-points">
+                                    <div class="key-point">
+                                        <div class="key-point-icon" style="background: var(--warning);">⏭️</div>
+                                        <div class="key-point-text"><strong>Sequential:</strong> Must complete in order (Granulation → Drying → Blending)</div>
+                                    </div>
+                                    <div class="key-point">
+                                        <div class="key-point-icon" style="background: var(--accent);">⏸️</div>
+                                        <div class="key-point-text"><strong>Parallel:</strong> Can run simultaneously (Coating-suspension prep in CK1 + Compression on PR3)</div>
+                                    </div>
+                                    <div class="key-point">
+                                        <div class="key-point-icon" style="background: var(--success);">🔀</div>
+                                        <div class="key-point-text"><strong>Alternative:</strong> Choose one path (Route Cardexil to Press 3 OR Press 5 — but Zentrix 50 mg never leaves segregated Line 5)</div>
+                                    </div>
+                                    <div class="key-point">
+                                        <div class="key-point-icon" style="background: var(--purple);">🔁</div>
+                                        <div class="key-point-text"><strong>Loop:</strong> Repeat until condition (LOD outside 1.5–2.5 % → keep drying)</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h5 style="margin-bottom: 1rem;">Segment Parameters</h5>
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Parameter Type</th>
+                                            <th>Example</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Process Parameter</td>
+                                            <td>Dryer LOD: 2.0 % (window 1.5–2.5 %)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Equipment Parameter</td>
+                                            <td>Press Speed: 4,000 tablets/min</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Material Parameter</td>
+                                            <td>Mg-stearate: 0.5–1 % (lubricant)</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Personnel Parameter</td>
+                                            <td>Cert: Potent-Product (ZTX-50) Trained</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sepasoft Section -->
+        <section id="sepasoft" class="section">
+            <div class="section-header">
+                <h2>Sepasoft & ISA-95 Implementation</h2>
+                <p>How Sepasoft modules implement ISA-95 standards within Ignition</p>
+            </div>
+
+            <div class="grid-3">
+                <div class="card" style="border-left: 4px solid var(--accent);">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: var(--accent);">🏭</div>
+                        <div>
+                            <div class="card-title">Equipment Manager</div>
+                            <div class="card-subtitle">MES Object Editor</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        Implements ISA-95 <strong>Equipment Hierarchy</strong> and <strong>Equipment Classes</strong>
+                    </p>
+                    <div class="key-points">
+                        <div class="key-point">
+                            <div class="key-point-icon">🏗️</div>
+                            <div class="key-point-text">Enterprise → Site → Area → Line → Cell</div>
+                        </div>
+                        <div class="key-point">
+                            <div class="key-point-icon">📋</div>
+                            <div class="key-point-text">Equipment Classes with shared properties</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="border-left: 4px solid var(--warning);">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: var(--warning);">📦</div>
+                        <div>
+                            <div class="card-title">Material Manager</div>
+                            <div class="card-subtitle">Track & Trace Module</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        Implements ISA-95 <strong>Material Model</strong> with full lot tracking
+                    </p>
+                    <div class="key-points">
+                        <div class="key-point">
+                            <div class="key-point-icon">📝</div>
+                            <div class="key-point-text">Material Definitions (Part Master)</div>
+                        </div>
+                        <div class="key-point">
+                            <div class="key-point-icon">🔗</div>
+                            <div class="key-point-text">Genealogy for full traceability</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="border-left: 4px solid var(--success);">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: var(--success);">📊</div>
+                        <div>
+                            <div class="card-title">OEE Module</div>
+                            <div class="card-subtitle">Operations Performance</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        Implements ISA-95 <strong>Operations Schedule</strong> and <strong>Performance</strong>
+                    </p>
+                    <div class="key-points">
+                        <div class="key-point">
+                            <div class="key-point-icon">📅</div>
+                            <div class="key-point-text">Work Orders / Production Runs</div>
+                        </div>
+                        <div class="key-point">
+                            <div class="key-point-icon">📈</div>
+                            <div class="key-point-text">OEE calculation & downtime tracking</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 1.5rem;">
+                <div class="card-header">
+                    <div class="card-icon" style="background: linear-gradient(135deg, var(--purple), var(--pink));">🔄</div>
+                    <div>
+                        <div class="card-title">Recipe Manager & Segments</div>
+                        <div class="card-subtitle">Implementing Process Segments in Sepasoft</div>
+                    </div>
+                </div>
+                <div class="grid-2" style="margin-top: 1rem;">
+                    <div>
+                        <h5 style="margin-bottom: 1rem;">ISA-95 to Sepasoft Mapping</h5>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ISA-95 Concept</th>
+                                    <th>Sepasoft Equivalent</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Process Segment</td>
+                                    <td>Recipe Phase Template</td>
+                                </tr>
+                                <tr>
+                                    <td>Product Segment</td>
+                                    <td>Recipe (Product-Specific)</td>
+                                </tr>
+                                <tr>
+                                    <td>Operations Segment</td>
+                                    <td>Recipe Run Instance</td>
+                                </tr>
+                                <tr>
+                                    <td>Segment Parameter</td>
+                                    <td>Recipe Parameter</td>
+                                </tr>
+                                <tr>
+                                    <td>Segment Dependency</td>
+                                    <td>Phase Sequence</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div>
+                        <h5 style="margin-bottom: 1rem;">Recipe Structure Example</h5>
+                        <div class="code-block">
+                            <span class="code-comment">// Sepasoft Recipe Structure</span><br>
+                            <span class="code-keyword">Recipe:</span> <span class="code-string">"Cardexil_10mg" (R-CDX-07 v12)</span><br>
+                            <span class="code-property">  Phase 1:</span> <span class="code-string">Compression</span><br>
+                            <span class="code-property">    Equipment:</span> <span class="code-string">PR3</span><br>
+                            <span class="code-property">    Parameters:</span> <span class="code-string">Weight=250mg ±5%, Hardness=110N, Speed=4000tpm</span><br><br>
+                            <span class="code-property">  Phase 2:</span> <span class="code-string">Blistering + Cartoning</span><br>
+                            <span class="code-property">    Equipment:</span> <span class="code-string">BL3, CR3</span><br>
+                            <span class="code-property">    Parameters:</span> <span class="code-string">Seal=180C, UI_Print=Verify, Market=Domestic</span><br><br>
+                            <span class="code-property">  Phase 3:</span> <span class="code-string">Aggregation</span><br>
+                            <span class="code-property">    Equipment:</span> <span class="code-string">CP1, PZ1 (SSCC)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Examples Section -->
+        <section id="examples" class="section">
+            <div class="section-header">
+                <h2>Real-World Examples</h2>
+                <p>ISA-95 in action across OSD tablet manufacturing scenarios</p>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: linear-gradient(135deg, var(--accent), var(--teal));">📤</div>
+                        <div>
+                            <div class="card-title">ERP → MES: Work Order Download</div>
+                            <div class="card-subtitle">B2MML Production Schedule</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        When SAP sends a production order to MES using B2MML (ISA-95 Part 5):
+                    </p>
+                    <div class="code-block">
+                        <span class="code-comment">&lt;!-- B2MML ProductionSchedule --&gt;</span><br>
+                        <span class="code-tag">&lt;ProductionSchedule&gt;</span><br>
+                        &nbsp;&nbsp;<span class="code-tag">&lt;ID&gt;</span><span class="code-string">PO-77231</span><span class="code-tag">&lt;/ID&gt;</span><br>
+                        &nbsp;&nbsp;<span class="code-tag">&lt;ProductionRequest&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;ProductProductionRuleID&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">R-CDX-07</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;/ProductProductionRuleID&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;SegmentRequirement&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;ProcessSegmentID&gt;</span><span class="code-string">PKG-001</span><span class="code-tag">&lt;/ProcessSegmentID&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;EquipmentRequirement&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;EquipmentID&gt;</span><span class="code-string">Line3</span><span class="code-tag">&lt;/EquipmentID&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;/EquipmentRequirement&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;MaterialRequirement&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;MaterialDefinitionID&gt;</span><span class="code-string">CDX-10</span><span class="code-tag">&lt;/MaterialDefinitionID&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;Quantity&gt;</span><span class="code-string">1600000</span><span class="code-tag">&lt;/Quantity&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;UnitOfMeasure&gt;</span><span class="code-string">TAB</span><span class="code-tag">&lt;/UnitOfMeasure&gt;</span> <span class="code-comment">&lt;!-- = 400 cases --&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;/MaterialRequirement&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;/SegmentRequirement&gt;</span><br>
+                        &nbsp;&nbsp;<span class="code-tag">&lt;/ProductionRequest&gt;</span><br>
+                        <span class="code-tag">&lt;/ProductionSchedule&gt;</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: linear-gradient(135deg, var(--success), var(--cyan));">📥</div>
+                        <div>
+                            <div class="card-title">MES → ERP: Production Confirmation</div>
+                            <div class="card-subtitle">B2MML Production Performance</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;">
+                        MES sends production results back to SAP:
+                    </p>
+                    <div class="code-block">
+                        <span class="code-comment">&lt;!-- B2MML ProductionPerformance --&gt;</span><br>
+                        <span class="code-tag">&lt;ProductionPerformance&gt;</span><br>
+                        &nbsp;&nbsp;<span class="code-tag">&lt;ProductionScheduleID&gt;</span><span class="code-string">PO-77231</span><span class="code-tag">&lt;/ProductionScheduleID&gt;</span><br>
+                        &nbsp;&nbsp;<span class="code-tag">&lt;ProductionResponse&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;SegmentResponse&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;ProcessSegmentID&gt;</span><span class="code-string">PKG-001</span><span class="code-tag">&lt;/ProcessSegmentID&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;ActualEquipment&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;EquipmentID&gt;</span><span class="code-string">BL3</span><span class="code-tag">&lt;/EquipmentID&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;/ActualEquipment&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;ProducedMaterial&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;Quantity&gt;</span><span class="code-string">1584000</span><span class="code-tag">&lt;/Quantity&gt;</span> <span class="code-comment">&lt;!-- 396 cases × 4,000 --&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;MaterialLotID&gt;</span><span class="code-string">B-CX-2417</span><span class="code-tag">&lt;/MaterialLotID&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;MaterialSubLotID&gt;</span><span class="code-string">003591230800127456</span><span class="code-tag">&lt;/MaterialSubLotID&gt;</span> <span class="code-comment">&lt;!-- pallet SSCC --&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;/ProducedMaterial&gt;</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-tag">&lt;/SegmentResponse&gt;</span><br>
+                        &nbsp;&nbsp;<span class="code-tag">&lt;/ProductionResponse&gt;</span><br>
+                        <span class="code-tag">&lt;/ProductionPerformance&gt;</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 1.5rem;">
+                <div class="card-header">
+                    <div class="card-icon" style="background: linear-gradient(135deg, var(--warning), var(--danger));">🗺️</div>
+                    <div>
+                        <div class="card-title">ISA-95 Terminology Mapping</div>
+                        <div class="card-subtitle">SAP ↔ ISA-95 ↔ Sepasoft Quick Reference</div>
+                    </div>
+                </div>
+                <table class="data-table" style="margin-top: 1rem;">
+                    <thead>
+                        <tr>
+                            <th>ISA-95 Term</th>
+                            <th>SAP Term</th>
+                            <th>Sepasoft Term</th>
+                            <th>Pharma Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Enterprise</td>
+                            <td>Company Code</td>
+                            <td>Enterprise</td>
+                            <td>Helvion Pharma</td>
+                        </tr>
+                        <tr>
+                            <td>Site</td>
+                            <td>Plant</td>
+                            <td>Site</td>
+                            <td>Plant 2 · Lakeworth</td>
+                        </tr>
+                        <tr>
+                            <td>Area</td>
+                            <td>Production Area</td>
+                            <td>Area</td>
+                            <td>Packaging — Blistering, Cartoning & Serialization</td>
+                        </tr>
+                        <tr>
+                            <td>Work Center</td>
+                            <td>Work Center</td>
+                            <td>Line</td>
+                            <td>Line 3 (Blister–Cartoner)</td>
+                        </tr>
+                        <tr>
+                            <td>Work Unit</td>
+                            <td>Resource</td>
+                            <td>Cell / Unit</td>
+                            <td>BL3 (blister) · CR3 (cartoner + serialization)</td>
+                        </tr>
+                        <tr>
+                            <td>Process Segment</td>
+                            <td>Routing Operation</td>
+                            <td>Recipe Phase</td>
+                            <td>Blistering Op 20</td>
+                        </tr>
+                        <tr>
+                            <td>Material Definition</td>
+                            <td>Material Master</td>
+                            <td>Material</td>
+                            <td>CDX-10 (Cardexil 10 mg)</td>
+                        </tr>
+                        <tr>
+                            <td>Material Lot</td>
+                            <td>Batch</td>
+                            <td>Material Lot</td>
+                            <td>B-CX-2417 (coated batch)</td>
+                        </tr>
+                        <tr>
+                            <td>Operations Schedule</td>
+                            <td>Production Order</td>
+                            <td>Work Order</td>
+                            <td>PO-77231</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Quiz Section -->
+        <section id="quiz" class="section">
+            <div class="section-header">
+                <h2>Knowledge Check</h2>
+                <p>Test your understanding of ISA-95 concepts</p>
+            </div>
+
+            <div class="quiz-progress" id="quiz-progress"></div>
+
+            <div id="quiz-container" class="quiz-container">
+                <!-- Quiz content rendered by JS -->
+            </div>
+
+            <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button id="prev-btn" class="btn btn-secondary" onclick="prevQuestion()" style="display: none;">← Previous</button>
+                <button id="next-btn" class="btn btn-primary" onclick="nextQuestion()" style="margin-left: auto;">Next →</button>
+            </div>
+
+            <div id="quiz-results" style="display: none; margin-top: 2rem;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: linear-gradient(135deg, var(--success), var(--cyan));">🎉</div>
+                        <div>
+                            <div class="card-title">Quiz Complete!</div>
+                            <div class="card-subtitle" id="score-text">Your score: 0/12</div>
+                        </div>
+                    </div>
+                    <div id="results-summary"></div>
+                    <button class="btn btn-primary" onclick="resetQuiz()" style="margin-top: 1rem;">Retake Quiz</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // ── Helvion Pharma world constants (canon: Apps\PHARMA-MES-CONTEXT.md) ──
+        // Every id here is copied from the canon byte for byte. The HTML sections above
+        // weave the same values into prose (Overview · Data Models · Segments · Sepasoft ·
+        // Examples); the JS data below (levelData / partData / quizQuestions) reads them
+        // from this object. Next port: rewrite this block + the prose sections; the engine
+        // (navigation, tabs, quiz, gate) stays untouched.
+        const WORLD = {
+            company: 'Helvion Pharma',
+            site: 'Plant 2 · Lakeworth',
+            plantCode: '2000',
+            area: 'Packaging',
+            upstreamArea: 'OSD Manufacturing (dispensing → coating, ISA-88)',
+            line: 'Line 3',
+            units: { press: 'PR3', coater: 'CO1', blister: 'BL3', cartoner: 'CR3', casePacker: 'CP1', palletizer: 'PZ1' },
+            upstreamUnits: { dispensary: 'DSP1', granulator: 'GRN1', dryer: 'FBD2', mill: 'SIZ1', blender: 'BLD1', coatingKitchen: 'CK1' },
+            sepasoftPath: 'Helvion/Plant2/Packaging/Line3/BL3',
+            product: { code: 'CDX-10', name: 'Cardexil 10 mg', gtin: '00359123000108' },
+            potentProduct: { code: 'ZTX-50', name: 'Zentrix 50 mg', line: 'Line 5' },
+            recipe: 'R-CDX-07 v12',
+            order: { id: 'PO-77231', aufnr: '000004477231', cases: 400, tablets: 1600000 },
+            batch: 'B-CX-2417',
+            ids: {
+                apiLot: 'API-CDX-5512', granulation: 'GB-1834', blend: 'BLND-1834', pressRun: 'PR3-0724-A',
+                coatingSusp: 'CS-118', foilLot: 'FL-2216', cartonSerial: '4T7K9DQ2CX41', expiry: '2028-06',
+                bundle: 'BN-2417-88', caseId: 'CS-2417-31', caseGtin: '20359123000317',
+                sscc: '003591230800127456', gs1Prefix: '0359123', qpCert: 'QP-2417'
+            },
+            genealogy: 'API-CDX-5512 → GB-1834 → BLND-1834 → B-CX-2417 → PR3-0724-A → FL-2216 → carton UI → CS-2417-31 → SSCC 003591230800127456',
+            rates: { press: '4,000 tablets/min', blister: '400 blisters/min', cartoner: '200 cartons/min' },
+            unitMath: '10 tablets/blister · 2 blisters/carton · 10 cartons/bundle · 20 bundles/case = 200 cartons = 4,000 tablets per case',
+            changeover: '20 min strength change → 2 h product change → 3 h format change → ≈ 6 h + lab wait for a ZTX-50 potent clean',
+            oee: { from: '45.0', to: '63.5' },
+            specs: { lod: 'LOD 2.0 % (window 1.5–2.5 %)', weight: '250 mg ±5 %', hardness: '80–140 N', seal: '180 °C' },
+            connectivity: { opc: 'opc.tcp://pr3-plc.hp2.local:4840', node: 'ns=2;s=PR3.Prod.TabCount', gateway: 'EG-PKG-01', historian: 'HP2-HIST', serMgr: 'HP2-SER' },
+            traps: { tabCountK: 'TabCountK counts kilo-tablets (×1,000)', weightTmg: 'WeightTmg is tenths of a milligram (2,500 = 250.0 mg)', microStop: '6–9 s foil-splice micro-stops on BL3 are invisible at 30-s polling' },
+            // Not in the canon — proposed additions (see port report): physical-asset serials + employee ids
+            physicalAsset: { blisterSerial: 'BLM-2019-3316', blisterSerialAfterRebuild: 'BLM-2025-0142' },
+            people: { mei: 'Mei (EMP-2231)', petr: 'Petr (EMP-2607)', lucia: 'Lucia (EMP-2914)' }
+        };
+
+        // Mobile Navigation Toggle
+        function toggleMobileNav() {
+            document.getElementById('mobileNav').classList.toggle('show');
+        }
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.mobile-nav-item').forEach(t => t.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Update nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                if (tab.getAttribute('onclick').includes(sectionId)) {
+                    tab.classList.add('active');
+                }
+            });
+            document.querySelectorAll('.mobile-nav-item').forEach(tab => {
+                if (tab.getAttribute('onclick').includes(sectionId)) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
+        // Level Details Data
+        const levelData = {
+            4: {
+                name: 'Level 4: Business Planning & Logistics',
+                color: 'var(--level-4)',
+                timeframe: 'Days to Months',
+                systems: ['ERP (SAP, Oracle)', 'PLM', 'Supply Chain', 'CRM'],
+                functions: ['Production Planning', 'Inventory Management', 'Cost Accounting', 'Order Management'],
+                pharma: `Annual demand planning per market and strength, production orders in cases (${WORLD.order.id} = ${WORLD.order.cases} cases of ${WORLD.product.code}), API procurement with long lead times, cost per batch, QP-release status to distribution, FMD upload to the EU Hub via the L4 serialization provider`
+            },
+            3: {
+                name: 'Level 3: Manufacturing Operations Management',
+                color: 'var(--level-3)',
+                timeframe: 'Minutes to Days',
+                systems: ['MES/MOM', 'Sepasoft', 'Quality Management', 'Maintenance'],
+                functions: ['Production Scheduling', 'Work Order Management', 'Quality Tracking', 'Labor Management', 'Performance Analysis'],
+                pharma: `Executing the sequence Cadence APS releases (changeover ladder: ${WORLD.changeover}), the electronic batch record with review by exception, genealogy ${WORLD.ids.apiLot} → carton UI, OEE on the Line 3 packaging line (${WORLD.oee.from} → ${WORLD.oee.to}), serialization + aggregation to the pallet SSCC, in-process checks and SPC`
+            },
+            2: {
+                name: 'Level 2: Monitoring & Supervisory Control',
+                color: 'var(--level-2)',
+                timeframe: 'Seconds to Minutes',
+                systems: ['SCADA', 'HMI', 'Ignition', 'Data Historian'],
+                functions: ['Process Visualization', 'Alarm Management', 'Data Collection', 'Supervisory Control'],
+                pharma: `Fluid-bed dryer NIR moisture trend (${WORLD.specs.lod}), press HMI with per-tablet compression force and reject counts, blister camera-inspection HMI, serialization-station HMI (UI printed / verified / rejected), historian ${WORLD.connectivity.historian}`
+            },
+            1: {
+                name: 'Level 1: Basic Control',
+                color: 'var(--level-1)',
+                timeframe: 'Milliseconds to Seconds',
+                systems: ['PLC', 'DCS', 'Motion Controllers', 'Drive Systems'],
+                functions: ['Sequential Control', 'Interlocks', 'PID Loops', 'Safety Systems'],
+                pharma: `Press turret drive and per-tablet force-based auto-reject, dryer inlet-air temperature PID (60–70 °C), blister seal-temperature control (${WORLD.specs.seal}), cartoner leaflet-missing interlock (fault 4408), safety interlocks`
+            },
+            0: {
+                name: 'Level 0: Physical Process',
+                color: 'var(--level-0)',
+                timeframe: 'Real-time / Continuous',
+                systems: ['Sensors', 'Actuators', 'Drives', 'I/O Modules'],
+                functions: ['Measurement', 'Actuation', 'Physical Operations'],
+                pharma: `Inline NIR moisture probe, compression-force load cells, checkweigher, blister fill/empty-pocket cameras, DataMatrix UI verification camera on ${WORLD.units.cartoner}, metal detector (Fe 1.5 mm test piece), coating spray nozzles`
+            }
+        };
+
+        function selectLevel(level) {
+            document.querySelectorAll('.pyramid-level').forEach(l => l.classList.remove('selected'));
+            document.querySelector(`.pyramid-level-${level}`).classList.add('selected');
+            
+            const data = levelData[level];
+            document.getElementById('level-detail').innerHTML = `
+                <div class="detail-header">
+                    <div class="detail-badge" style="background: ${data.color}; color: white;">Level ${level}</div>
+                    <div>
+                        <h3 style="margin-bottom: 0.25rem;">${data.name}</h3>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">Time Horizon: ${data.timeframe}</div>
+                    </div>
+                </div>
+                <div class="grid-2" style="gap: 1rem;">
+                    <div style="background: var(--secondary); padding: 1rem; border-radius: 10px;">
+                        <h5 style="margin-bottom: 0.75rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Systems</h5>
+                        <p style="font-size: 0.9rem;">${data.systems.join(', ')}</p>
+                    </div>
+                    <div style="background: var(--secondary); padding: 1rem; border-radius: 10px;">
+                        <h5 style="margin-bottom: 0.75rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Key Functions</h5>
+                        <p style="font-size: 0.9rem;">${data.functions.join(', ')}</p>
+                    </div>
+                </div>
+                <div style="background: var(--secondary); padding: 1rem; border-radius: 10px; margin-top: 1rem;">
+                    <h5 style="margin-bottom: 0.75rem; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">OSD Pharma Examples — ${WORLD.company}, ${WORLD.site}</h5>
+                    <p style="font-size: 0.9rem;">${data.pharma}</p>
+                </div>
+            `;
+        }
+
+        // Initialize Level 3 as selected
+        selectLevel(3);
+
+        // Part Details Data
+        const partData = {
+            1: {
+                title: 'Part 1: Models and Terminology',
+                status: 'part-1',
+                description: 'Establishes the foundation by defining the hierarchical levels (Purdue Model) and basic terminology used throughout the standard.',
+                keyPoints: [
+                    'Defines 5 functional levels (Level 0-4)',
+                    'Establishes common vocabulary for manufacturing',
+                    'Introduces functional hierarchy model',
+                    'Defines scope of MES/MOM systems'
+                ],
+                example: {
+                    title: '🏭 Pharma Application',
+                    content: `Defines that "Work Center" means a production line (like ${WORLD.line}, the blister–cartoner pair), and "Work Unit" means a specific machine (like ${WORLD.units.blister}). Upstream, the same vocabulary maps onto ISA-88: the granulation suite is a process cell, ${WORLD.upstreamUnits.granulator} and ${WORLD.upstreamUnits.dryer} are units. This ensures SAP, Ignition and Sepasoft all understand these terms identically.`
+                }
+            },
+            2: {
+                title: 'Part 2: Object Model Attributes',
+                status: 'part-2',
+                description: 'Defines the detailed attributes and data structures for the objects introduced in Part 1. Specifies what information each object should contain.',
+                keyPoints: [
+                    'Equipment attributes (capabilities, properties)',
+                    'Material attributes (specifications, tracking)',
+                    'Personnel attributes (qualifications, certifications)',
+                    'Operations attributes (parameters, constraints)'
+                ],
+                example: {
+                    title: '📦 Material Attributes Example',
+                    content: `For a coated tablet batch, Part 2 defines attributes like: Material ID (${WORLD.product.code}), Material Class, Batch Number (${WORLD.batch}), Blend Lot (${WORLD.ids.blend}), tablet weight, hardness, LOD %, Quality Status (QUARANTINE / RELEASED), Hold-Time Expiry. These attributes make the batch record complete and give EU FMD serialization a lot to point at.`
+                }
+            },
+            3: {
+                title: 'Part 3: Activity Models of Manufacturing Operations',
+                status: 'part-3',
+                description: 'Defines the activities and functions performed by MES/MOM systems. This is where Process Segments, Product Segments, and Operations are defined.',
+                keyPoints: [
+                    'Production operations management',
+                    'Quality operations management',
+                    'Inventory operations management',
+                    'Maintenance operations management',
+                    'Process Segments and Product Segments'
+                ],
+                example: {
+                    title: '🔄 Process Segment Example',
+                    content: `A "Blistering" Process Segment defines: Equipment needed (blister machine class), Personnel requirements (Blister Certification), Material inputs (bulk coated tablets, forming film, lidding foil), Material outputs (blisters), Parameters (seal temperature, speed up to ${WORLD.rates.blister}). This can then be specialized into Product Segments for specific products like ${WORLD.product.name} or Femodyl 2.5 mg mini-tablets (different format tooling).`
+                }
+            },
+            4: {
+                title: 'Part 4: Object Models and Attributes for MOM',
+                status: 'part-4',
+                description: 'Provides detailed object models specifically for Manufacturing Operations Management, extending Part 2 with MOM-specific details.',
+                keyPoints: [
+                    'Detailed MOM data models',
+                    'Operations definition model',
+                    'Operations schedule model',
+                    'Operations performance model',
+                    'Resource relationship models'
+                ],
+                example: {
+                    title: '📋 Operations Definition',
+                    content: `Defines how a "Make ${WORLD.product.name}" operation is structured (master recipe ${WORLD.recipe}): references Process Segments (Compression, Coating, Blistering, Cartoning + Serialization, Aggregation), specifies Equipment requirements for each, defines the Material bill-of-resources (API, excipients, binder, coating suspension, forming film, lidding foil, leaflets, carton blanks, anti-tamper labels), and includes the in-process checks and tolerances (weight ${WORLD.specs.weight}, hardness ${WORLD.specs.hardness}).`
+                }
+            },
+            5: {
+                title: 'Part 5: Business to Manufacturing Transactions',
+                status: 'part-5',
+                description: 'Defines standard transaction models for exchanging information between business (Level 4) and manufacturing (Level 3) systems. B2MML XML schemas are based on this part.',
+                keyPoints: [
+                    'Production schedule transactions',
+                    'Production performance transactions',
+                    'Material transactions (consumption, production)',
+                    'B2MML (Business to Manufacturing Markup Language)',
+                    'Standard XML schemas for integration'
+                ],
+                example: {
+                    title: '🔗 B2MML Integration',
+                    content: `When SAP sends Production Order ${WORLD.order.id} (${WORLD.order.cases} cases = 1.6 M tablets of ${WORLD.product.name}), it uses the B2MML ProductionSchedule schema. When MES confirms completion with the produced quantity, batch ${WORLD.batch} and the material lots consumed, it sends B2MML ProductionPerformance. This standardization reduces integration effort by 60-70% compared to custom point-to-point integrations.`
+                }
+            }
+        };
+
+        function selectPart(partNum, el) {
+            document.querySelectorAll('.part-card').forEach(c => c.classList.remove('active'));
+            (el || document.querySelectorAll('.part-card')[partNum - 1]).classList.add('active');
+            
+            const data = partData[partNum];
+            document.getElementById('part-detail').innerHTML = `
+                <div class="detail-header">
+                    <span class="status-badge ${data.status}" style="font-size: 1rem; padding: 0.5rem 1rem;">Part ${partNum}</span>
+                    <div>
+                        <h3 style="margin-bottom: 0.25rem;">${data.title}</h3>
+                    </div>
+                </div>
+                <p style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 1.5rem;">${data.description}</p>
+                <h4 style="margin-bottom: 1rem;">Key Contents</h4>
+                <div class="key-points">
+                    ${data.keyPoints.map(point => `
+                        <div class="key-point">
+                            <div class="key-point-icon">✓</div>
+                            <div class="key-point-text">${point}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="example-box">
+                    <div class="example-header">${data.example.title}</div>
+                    <div class="example-content">${data.example.content}</div>
+                </div>
+            `;
+        }
+
+        // Initialize Part 3 detail
+        selectPart(3);
+
+        // Model Tabs
+        function showModelTab(modelId, btn) {
+            document.querySelectorAll('#model-tabs-content .tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#models .tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`model-${modelId}`).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // Segment Tabs
+        function showSegmentTab(segmentId, btn) {
+            document.querySelectorAll('#segment-tabs-content .tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#segments .tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`segment-${segmentId}`).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // Quiz Logic
+        // 12 questions. Never-block: a wrong answer shows the explanation and the quiz
+        // advances regardless (see nextQuestion) — no gating on correctness.
+        const quizQuestions = [
+            {
+                question: 'Which ISA-95 level represents the MES/MOM domain?',
+                options: ['Level 4 - Business Planning', 'Level 3 - Manufacturing Operations', 'Level 2 - SCADA/HMI', 'Level 1 - PLC Control'],
+                correct: 1,
+                explanation: 'Level 3 is the Manufacturing Operations Management layer where MES systems operate, bridging Level 4 (ERP) and Level 2 (SCADA).'
+            },
+            {
+                question: 'What is the key difference between a Process Segment and a Product Segment?',
+                options: [
+                    'Process Segment is for batch, Product Segment is for discrete',
+                    'Process Segment is generic capability, Product Segment is product-specific',
+                    'Process Segment is in ERP, Product Segment is in MES',
+                    'There is no difference - they are the same thing'
+                ],
+                correct: 1,
+                explanation: `Process Segment defines generic manufacturing capability (e.g., "Blistering"), while Product Segment is the product-specific implementation (e.g., "${WORLD.product.name} Blistering Op 20" — 10 tablets per blister, seal ${WORLD.specs.seal}).`
+            },
+            {
+                question: 'Which ISA-95 Part defines B2MML transactions for ERP-MES integration?',
+                options: ['Part 1 - Models & Terminology', 'Part 2 - Object Attributes', 'Part 3 - Activity Models', 'Part 5 - Business to Manufacturing Transactions'],
+                correct: 3,
+                explanation: 'Part 5 defines the standard transaction models and B2MML (Business to Manufacturing Markup Language) XML schemas for ERP-MES integration.'
+            },
+            {
+                question: 'What is the difference between Equipment and Physical Asset in ISA-95?',
+                options: [
+                    'Equipment is for production, Physical Asset is for maintenance only',
+                    'Equipment is role-based (function), Physical Asset is the actual machine',
+                    'Equipment is in Level 3, Physical Asset is in Level 2',
+                    'They are identical terms used interchangeably'
+                ],
+                correct: 1,
+                explanation: `Equipment represents a functional role ("${WORLD.units.blister}"), while Physical Asset represents the actual machine (blister machine Serial# ${WORLD.physicalAsset.blisterSerial}). This allows maintenance tracking — and GMP change control on a replacement — without affecting production definitions.`
+            },
+            {
+                question: 'What is the correct ISA-95 Equipment Hierarchy order from top to bottom?',
+                options: [
+                    'Site → Enterprise → Area → Line → Cell',
+                    'Enterprise → Site → Area → Work Center → Work Unit',
+                    'Plant → Department → Line → Station → Cell',
+                    'Company → Factory → Zone → Line → Machine'
+                ],
+                correct: 1,
+                explanation: `ISA-95 defines: Enterprise → Site → Area → Work Center (Line) → Work Unit (Cell). At Helvion: ${WORLD.company} → ${WORLD.site} → ${WORLD.area} → ${WORLD.line} → ${WORLD.units.blister} / ${WORLD.units.cartoner}.`
+            },
+            {
+                question: 'Which ISA-95 model would you use to track component traceability for a recall?',
+                options: ['Equipment Model', 'Personnel Model', 'Material Model', 'Physical Asset Model'],
+                correct: 2,
+                explanation: 'The Material Model tracks Material Definitions, Lots, and Sublots with genealogy, enabling full traceability for recalls — down to one carton serial range under EU FMD.'
+            },
+            {
+                question: 'In the Material Model, what is the relationship between Material Definition, Material Lot, and Material Sublot?',
+                options: [
+                    'They are three separate unrelated objects',
+                    'Definition is the part number, Lot is the batch, Sublot is the individual serial/unit',
+                    'Definition is for raw materials, Lot is for WIP, Sublot is for finished goods',
+                    'They represent different quality levels'
+                ],
+                correct: 1,
+                explanation: `Material Definition is the "what" (${WORLD.product.code}, GTIN ${WORLD.product.gtin}), Material Lot is a production batch (${WORLD.batch}), and Material Sublot is the individual unit (the serialized carton UI, SN ${WORLD.ids.cartonSerial}). This hierarchy enables lot and serial traceability.`
+            },
+            {
+                question: 'Which ISA-95 Part would you reference to understand Process Segments?',
+                options: ['Part 1 - Models & Terminology', 'Part 2 - Object Attributes', 'Part 3 - Activity Models', 'Part 5 - Transactions'],
+                correct: 2,
+                explanation: 'Part 3 (Activity Models of Manufacturing Operations) defines Process Segments, Product Segments, and how operations are structured and executed.'
+            },
+            {
+                question: `At ${WORLD.company} Plant 2, which genealogy chain correctly traces a carton of ${WORLD.product.name} back to the API?`,
+                options: [
+                    'Carton UI → bundle → case → pallet SSCC',
+                    `${WORLD.ids.apiLot} → ${WORLD.ids.granulation} → ${WORLD.ids.blend} → ${WORLD.batch} → ${WORLD.ids.pressRun} → blister lot → carton UI`,
+                    `${WORLD.ids.blend} → ${WORLD.ids.apiLot} → ${WORLD.batch} → carton UI → ${WORLD.ids.pressRun}`,
+                    `${WORLD.batch} → ${WORLD.ids.granulation} → ${WORLD.ids.apiLot} → ${WORLD.ids.pressRun} → carton UI`
+                ],
+                correct: 1,
+                explanation: `The genealogy chain runs: API lot ${WORLD.ids.apiLot} (+ excipient lots) → granulation batch ${WORLD.ids.granulation} (binder lot) → blend lot ${WORLD.ids.blend} (IBC ids) → coated batch ${WORLD.batch} (press run ${WORLD.ids.pressRun}, coating suspension ${WORLD.ids.coatingSusp}) → blister lot (film + foil ${WORLD.ids.foilLot}) → carton UI (leaflet + carton-blank lots). Option A is the aggregation pyramid (carton → bundle → case → SSCC), not genealogy.`
+            },
+            {
+                question: 'Under EU FMD, what plays the role of ISA-95 Material Sublot at the cartoner?',
+                options: [
+                    `The coated batch ${WORLD.batch}`,
+                    'The carton unique identifier (DataMatrix), printed and camera-verified on every carton at the serialization station',
+                    `The blend lot ${WORLD.ids.blend}`,
+                    `The production order ${WORLD.order.id}`
+                ],
+                correct: 1,
+                explanation: `Each carton gets a unique identifier — GTIN + a randomised serial (≤ 20 alphanumeric, allocated by the L4 serialization provider) + batch + expiry — printed and camera-verified ONLY at ${WORLD.units.cartoner}'s serialization station, then uploaded to the EU Hub. It is the pharma equivalent of a VIN-level Material Sublot. Note: FMD does not mandate aggregation; Helvion aggregates carton → bundle (10) → case (200 cartons) → pallet SSCC as best practice.`
+            },
+            {
+                question: 'Where does an OSD tablet plant switch from batch (ISA-88, kg and %) to discrete (units/min) manufacturing?',
+                options: [
+                    'At the dispensing booth',
+                    'At the fluid-bed dryer',
+                    'At the bulk-tablet hold — when released coated tablets in drums feed the blister machine',
+                    'At the palletizer'
+                ],
+                correct: 2,
+                explanation: `Dispensing, granulation, drying, blending, compression and coating are ISA-88 batches with a recipe (${WORLD.recipe}) and an electronic batch record. Bulk coated tablets of ${WORLD.batch} wait in drums until packaging release; from ${WORLD.units.blister} onward everything is countable — blisters, cartons, bundles, cases (${WORLD.unitMath}). One MES must handle both paradigms.`
+            },
+            {
+                question: 'The press auto-rejects an individual tablet on compression force in milliseconds, and Sepasoft logs OEE for the shift. Which ISA-95 levels are these?',
+                options: [
+                    'Both are Level 2',
+                    'Reject = Level 1 (basic control), OEE = Level 3 (MES)',
+                    'Reject = Level 0, OEE = Level 4',
+                    'Reject = Level 3, OEE = Level 1'
+                ],
+                correct: 1,
+                explanation: `Per-tablet force-based auto-reject is millisecond-class basic control at Level 1, fed by Level 0 sensors (compression-force load cells on ${WORLD.units.press}). OEE aggregation and analysis is a Level 3 MES function. Level 2 SCADA sits between, visualizing trends and alarms — and beware the two data-trust traps on the way up: ${WORLD.traps.tabCountK}; ${WORLD.traps.weightTmg}.`
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let score = 0;
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            const q = quizQuestions[currentQuestion];
+            
+            container.innerHTML = `
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Question ${currentQuestion + 1} of ${quizQuestions.length}</div>
+                <div class="quiz-question">${q.question}</div>
+                <div class="quiz-options">
+                    ${q.options.map((opt, i) => `
+                        <div class="quiz-option ${userAnswers[currentQuestion] === i ? 'selected' : ''}" onclick="selectAnswer(${i})">
+                            <div class="quiz-marker">${String.fromCharCode(65 + i)}</div>
+                            <div>${opt}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="quiz-feedback" id="feedback"></div>
+            `;
+            
+            updateProgressBar();
+            updateButtons();
+        }
+
+        function selectAnswer(index) {
+            userAnswers[currentQuestion] = index;
+            renderQuiz();
+        }
+
+        function nextQuestion() {
+            if (userAnswers[currentQuestion] === undefined) {
+                alert('Please select an answer');
+                return;
+            }
+            
+            const q = quizQuestions[currentQuestion];
+            const isCorrect = userAnswers[currentQuestion] === q.correct;
+            
+            document.querySelectorAll('.quiz-option').forEach((opt, i) => {
+                if (i === q.correct) opt.classList.add('correct');
+                else if (i === userAnswers[currentQuestion] && !isCorrect) opt.classList.add('incorrect');
+            });
+            
+            const feedback = document.getElementById('feedback');
+            feedback.className = `quiz-feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+            feedback.innerHTML = `<strong>${isCorrect ? '✓ Correct!' : '✗ Incorrect'}</strong><br>${q.explanation}`;
+            
+            setTimeout(() => {
+                if (currentQuestion < quizQuestions.length - 1) {
+                    currentQuestion++;
+                    renderQuiz();
+                } else {
+                    showResults();
+                }
+            }, 2500);
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuiz();
+            }
+        }
+
+        function updateProgressBar() {
+            const progress = document.getElementById('quiz-progress');
+            progress.innerHTML = quizQuestions.map((_, i) => `
+                <div class="quiz-progress-step ${i < currentQuestion ? 'completed' : ''} ${i === currentQuestion ? 'current' : ''}"></div>
+            `).join('');
+        }
+
+        function updateButtons() {
+            document.getElementById('prev-btn').style.display = currentQuestion > 0 ? 'block' : 'none';
+            document.getElementById('next-btn').textContent = currentQuestion === quizQuestions.length - 1 ? 'Finish' : 'Next →';
+        }
+
+        function showResults() {
+            score = quizQuestions.reduce((acc, q, i) => acc + (userAnswers[i] === q.correct ? 1 : 0), 0);
+            
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            document.getElementById('prev-btn').style.display = 'none';
+            document.getElementById('quiz-results').style.display = 'block';
+            document.getElementById('score-text').textContent = `Your score: ${score}/${quizQuestions.length}`;
+            
+            const percentage = (score / quizQuestions.length) * 100;
+            let message = '';
+            if (percentage === 100) message = '🌟 Perfect! You have an excellent understanding of ISA-95!';
+            else if (percentage >= 75) message = '👏 Great job! You have a solid grasp of ISA-95 concepts.';
+            else if (percentage >= 50) message = '👍 Good effort! Review the Segments and Parts sections for better understanding.';
+            else message = '📚 Keep learning! Review all sections and try again.';
+            
+            document.getElementById('results-summary').innerHTML = `<p style="margin-top: 1rem; font-size: 1.1rem;">${message}</p>`;
+        }
+
+        function resetQuiz() {
+            currentQuestion = 0;
+            userAnswers = [];
+            score = 0;
+            document.getElementById('quiz-container').style.display = 'block';
+            document.getElementById('next-btn').style.display = 'block';
+            document.getElementById('quiz-results').style.display = 'none';
+            renderQuiz();
+        }
+
+        // Initialize quiz
+        renderQuiz();
+    </script>
+<style>
+  .gate-overlay { position: fixed; inset: 0; z-index: 2000; background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); display: flex; align-items: center; justify-content: center; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  .gate-card { background: #fff; border-radius: 18px; padding: 30px 28px; width: 100%; max-width: 360px; box-shadow: 0 18px 60px rgba(0,0,0,0.5); }
+  .gate-brand { text-align: center; margin-bottom: 16px; }
+  .gate-logo { width: 54px; height: 54px; border-radius: 14px; background: #312e81; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5em; }
+  .gate-brand h2 { font-size: 1.15em; color: #111827; margin-top: 10px; }
+  .gate-brand p { font-size: 0.8em; color: #6b7280; margin-top: 3px; }
+  .gate-card label { display: block; font-size: 0.8em; font-weight: 600; color: #374151; margin: 10px 0 4px; }
+  .gate-card input { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 0.95em; outline: none; box-sizing: border-box; }
+  .gate-card input:focus { border-color: #312e81; box-shadow: 0 0 0 3px rgba(49,46,129,0.15); }
+  .gate-btn { width: 100%; margin-top: 16px; padding: 11px; border: none; border-radius: 10px; background: #312e81; color: #fff; font-weight: 700; font-size: 0.95em; cursor: pointer; }
+  .gate-btn:hover { background: #1e1b4b; }
+  .gate-alt { display: block; width: 100%; text-align: center; background: none; border: none; color: #6b7280; font-size: 0.8em; margin-top: 12px; cursor: pointer; text-decoration: underline; }
+  .gate-alt:hover { color: #312e81; }
+  .gate-msg { margin-top: 10px; font-size: 0.82em; color: #b91c1c; background: #fee2e2; border-radius: 8px; padding: 8px 10px; display: none; }
+  .gate-msg.ok { color: #047857; background: #d1fae5; }
+  body.gate-locked { overflow: hidden; }
+</style>
+<script>
+(function () {
+  var KEY_AUTH = 'pharmaShowcaseAuth';
+  var KEY_PASS = 'pharmaShowcasePass';
+  var CODE = '1208';
+  var DEFAULT_PASS = 'dec25';
+
+  try { if (sessionStorage.getItem(KEY_AUTH) === 'ok') return; } catch (e) { return; }
+
+  function currentPass() {
+    try { return localStorage.getItem(KEY_PASS) || DEFAULT_PASS; } catch (e) { return DEFAULT_PASS; }
+  }
+
+  var ov = document.createElement('div');
+  ov.className = 'gate-overlay';
+  ov.innerHTML =
+    '<div class="gate-card">' +
+      '<div class="gate-brand"><span class="gate-logo" aria-hidden="true">💊</span>' +
+      '<h2>Helvion Pharma</h2><p>MES Practitioner Training — sign in to continue</p></div>' +
+      '<form id="gate-login">' +
+        '<label for="gate-user">Username</label><input id="gate-user" type="text" autocomplete="off">' +
+        '<label for="gate-pass">Password</label><input id="gate-pass" type="password">' +
+        '<div id="gate-login-msg" class="gate-msg"></div>' +
+        '<button type="submit" class="gate-btn">Enter Training</button>' +
+        '<button type="button" id="gate-to-reset" class="gate-alt">Change password (instructor)</button>' +
+      '</form>' +
+      '<form id="gate-reset" style="display:none">' +
+        '<label for="gate-code">Security code</label><input id="gate-code" type="password">' +
+        '<label for="gate-new">New password</label><input id="gate-new" type="password">' +
+        '<label for="gate-confirm">Confirm password</label><input id="gate-confirm" type="password">' +
+        '<div id="gate-reset-msg" class="gate-msg"></div>' +
+        '<button type="submit" class="gate-btn">Update Password</button>' +
+        '<button type="button" id="gate-to-login" class="gate-alt">Back to sign in</button>' +
+      '</form>' +
+    '</div>';
+
+  document.body.appendChild(ov);
+  document.body.classList.add('gate-locked');
+
+  function msg(id, text, ok) {
+    var m = document.getElementById(id);
+    m.textContent = text;
+    m.className = 'gate-msg' + (ok ? ' ok' : '');
+    m.style.display = 'block';
+  }
+
+  document.getElementById('gate-login').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var u = document.getElementById('gate-user').value.trim().toLowerCase();
+    var p = document.getElementById('gate-pass').value;
+    if (u === 'mes' && p === currentPass()) {
+      try { sessionStorage.setItem(KEY_AUTH, 'ok'); } catch (err) {}
+      document.body.classList.remove('gate-locked');
+      ov.remove();
+    } else {
+      msg('gate-login-msg', 'Invalid username or password', false);
+    }
+  });
+
+  document.getElementById('gate-reset').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var code = document.getElementById('gate-code').value;
+    var np = document.getElementById('gate-new').value;
+    var cp = document.getElementById('gate-confirm').value;
+    if (code !== CODE) { msg('gate-reset-msg', 'Incorrect security code', false); return; }
+    if (np.length < 4) { msg('gate-reset-msg', 'New password must be at least 4 characters', false); return; }
+    if (np !== cp) { msg('gate-reset-msg', 'Passwords do not match', false); return; }
+    try { localStorage.setItem(KEY_PASS, np); } catch (err) {}
+    msg('gate-reset-msg', 'Password updated — use it to sign in', true);
+  });
+
+  document.getElementById('gate-to-reset').addEventListener('click', function () {
+    document.getElementById('gate-login').style.display = 'none';
+    document.getElementById('gate-reset').style.display = 'block';
+  });
+  document.getElementById('gate-to-login').addEventListener('click', function () {
+    document.getElementById('gate-reset').style.display = 'none';
+    document.getElementById('gate-login').style.display = 'block';
+  });
+
+  document.getElementById('gate-user').focus();
+})();
+</script>
+</body>
+</html>

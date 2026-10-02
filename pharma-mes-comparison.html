@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pharma MES: Without vs With — Helvion Plant 2</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #1f2937;
+  }
+
+  .container { max-width: 1400px; margin: 0 auto; }
+
+  /* ---------- header + toggle ---------- */
+  .header { text-align: center; color: white; padding: 28px 10px 18px; }
+  .header h1 { font-size: 2.1em; margin-bottom: 8px; }
+  .header h1 .accent { color: #4dd0e1; }
+  .header .subtitle { color: #b3c7cf; font-size: 1.05em; }
+
+  .scenario-toggle { display: flex; gap: 14px; justify-content: center; margin: 22px 0 26px; flex-wrap: wrap; }
+  .toggle-btn {
+    border: none; cursor: pointer; font-weight: 700; font-size: 1.02em;
+    padding: 15px 30px; border-radius: 40px; color: #d8e2e7;
+    background: rgba(255,255,255,0.08); transition: all 0.25s ease;
+  }
+  .toggle-btn:hover { transform: translateY(-2px); }
+  .toggle-btn.without.active {
+    background: linear-gradient(135deg, #b71c1c, #e53935); color: white;
+    box-shadow: 0 6px 22px rgba(229,57,53,0.45);
+  }
+  .toggle-btn.with.active {
+    background: linear-gradient(135deg, #00838f, #26c6da); color: white;
+    box-shadow: 0 6px 22px rgba(38,198,218,0.45);
+  }
+
+  .scenario-panel { display: none; }
+  .scenario-panel.active { display: block; animation: fadeIn 0.5s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+  /* ---------- banners + sections ---------- */
+  .banner {
+    border-radius: 14px; padding: 16px 22px; text-align: center; color: white;
+    font-weight: 700; margin-bottom: 22px; font-size: 1.05em;
+  }
+  .banner small { display: block; font-weight: 500; opacity: 0.9; margin-top: 4px; font-size: 0.85em; }
+  .banner.chaos { background: linear-gradient(135deg, #7f1010, #c62828); animation: bannerPulse 2.2s infinite; }
+  .banner.calm { background: linear-gradient(135deg, #006064, #00acc1); }
+  @keyframes bannerPulse { 0%,100% { box-shadow: 0 0 0 rgba(229,57,53,0.5);} 50% { box-shadow: 0 0 26px rgba(229,57,53,0.75);} }
+
+  .section {
+    background: white; border-radius: 16px; padding: 26px 28px; margin-bottom: 24px;
+    box-shadow: 0 8px 26px rgba(0,0,0,0.25);
+  }
+  .section.chaos { border-left: 6px solid #e53935; }
+  .section.calm { border-left: 6px solid #26c6da; }
+  .section h2 { font-size: 1.35em; margin-bottom: 6px; color: #111827; }
+  .section .lead { color: #6b7280; font-size: 0.95em; margin-bottom: 18px; }
+  .caption { text-align: center; color: #6b7280; font-size: 0.92em; margin-top: 16px; font-style: italic; }
+  .caption.bad { color: #b91c1c; }
+  .caption.good { color: #047857; }
+
+  /* ---------- line strip ---------- */
+  .line-strip { display: flex; align-items: stretch; gap: 6px; flex-wrap: wrap; justify-content: center; }
+  .station {
+    flex: 1 1 150px; max-width: 200px; border-radius: 12px; padding: 12px 10px; text-align: center;
+    background: #f8fafc; border: 2px solid #e2e8f0;
+  }
+  .station .st-icon { font-size: 1.6em; }
+  .station .st-name { font-weight: 700; font-size: 0.88em; margin: 6px 0; }
+  .station .st-note { font-size: 0.75em; color: #6b7280; margin-top: 6px; line-height: 1.35; }
+  .station.problem { border-color: #ef9a9a; background: #fff5f5; animation: stationPulse 1.8s infinite; }
+  @keyframes stationPulse { 0%,100% { box-shadow: 0 0 0 rgba(229,57,53,0.4);} 50% { box-shadow: 0 0 14px rgba(229,57,53,0.55);} }
+  .station.good { border-color: #80deea; background: #f0fdff; box-shadow: 0 0 12px rgba(38,198,218,0.25); }
+  .strip-arrow { align-self: center; color: #94a3b8; font-size: 1.1em; }
+  .pill {
+    display: inline-block; font-size: 0.72em; font-weight: 800; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.4px;
+  }
+  .pill.red { background: #fee2e2; color: #b91c1c; }
+  .pill.yellow { background: #fef3c7; color: #92400e; }
+  .pill.green { background: #d1fae5; color: #047857; }
+
+  /* ---------- confusion / smart workstation scene ---------- */
+  .scene-grid { display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 18px; align-items: start; }
+  .scene-col h3 { font-size: 0.95em; margin-bottom: 10px; color: #374151; text-align: center; }
+
+  .rack { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .reel-bin {
+    border: 2px solid #d4941e; background: #fffaf0; border-radius: 10px; padding: 8px 9px;
+    font-size: 0.76em; font-weight: 700; color: #713f12; position: relative;
+    animation: binPulse 2s infinite;
+  }
+  .reel-bin .bin-sub { display: block; font-weight: 500; color: #a16207; font-size: 0.9em; margin-top: 2px; }
+  .reel-bin.potent { background: #fff7ed; border-color: #fb923c; color: #7c2d12; }
+  .reel-bin.potent .bin-sub { color: #ea580c; }
+  .reel-bin.export { border-style: dashed; border-color: #dc2626; }
+  @keyframes binPulse { 0%,100% { box-shadow: 0 0 0 rgba(212,148,30,0.35);} 50% { box-shadow: 0 0 10px rgba(212,148,30,0.55);} }
+  .reel-bin.lit {
+    animation: pickLight 1.4s infinite; border-color: #22c55e; background: #f0fdf4; color: #14532d;
+  }
+  .reel-bin.lit::after {
+    content: '✓ PICK'; position: absolute; top: -9px; right: -6px; background: #22c55e; color: white;
+    font-size: 0.72em; padding: 2px 8px; border-radius: 12px;
+  }
+  @keyframes pickLight { 0%,100% { box-shadow: 0 0 4px rgba(34,197,94,0.5);} 50% { box-shadow: 0 0 18px rgba(34,197,94,0.9);} }
+  .reel-bin.locked { opacity: 0.5; animation: none; }
+  .rack-caption { font-size: 0.8em; color: #92400e; margin-top: 10px; line-height: 1.4; }
+
+  .operator-box { text-align: center; }
+  .operator { font-size: 3.2em; display: inline-block; animation: wobble 2.6s infinite; }
+  @keyframes wobble { 0%,100% { transform: rotate(0);} 20% { transform: rotate(-7deg);} 45% { transform: rotate(5deg);} 70% { transform: rotate(-4deg);} }
+  .thought-bubble {
+    background: #f1f5f9; border: 2px dashed #94a3b8; border-radius: 14px; padding: 12px 14px;
+    font-size: 0.83em; font-style: italic; color: #334155; text-align: left; margin-top: 10px; line-height: 1.45;
+  }
+  .stress-list { margin-top: 12px; text-align: left; font-size: 0.8em; color: #7f1d1d; }
+  .stress-list div { padding: 3px 0; }
+
+  .run-card { border: 2px solid #fca5a5; background: #fff7f7; border-radius: 12px; padding: 14px; font-size: 0.85em; }
+  .run-card.good { border-color: #67e8f9; background: #f0fdff; }
+  .run-card .rc-row { display: flex; justify-content: space-between; gap: 10px; padding: 4px 0; border-bottom: 1px dashed #e5e7eb; }
+  .run-card .rc-row span:last-child { font-weight: 700; text-align: right; }
+  .run-card .rc-row .bad { color: #b91c1c; }
+  .run-card .rc-foot { margin-top: 10px; font-size: 0.9em; color: #b91c1c; font-weight: 600; }
+  .run-card.good .rc-foot { color: #047857; }
+
+  .silo-note {
+    margin-top: 18px; background: #fffbeb; border: 1px solid #fcd34d; border-radius: 12px;
+    padding: 12px 16px; font-size: 0.9em; color: #78350f; line-height: 1.45;
+  }
+
+  /* ---------- terminal ---------- */
+  .terminal {
+    background: #0b1220; color: #7dd3fc; border-radius: 12px; padding: 14px 16px;
+    font-family: 'Consolas', 'Monaco', monospace; font-size: 0.78em; line-height: 1.65; text-align: left;
+  }
+  .terminal .t-title { color: #38bdf8; font-weight: 700; border-bottom: 1px solid #1e3a5f; padding-bottom: 5px; margin-bottom: 7px; }
+  .terminal .ok { color: #4ade80; }
+  .cursor { display: inline-block; width: 8px; height: 13px; background: #7dd3fc; animation: blink 1s steps(1) infinite; vertical-align: text-bottom; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .pokayoke { border: 2px solid #67e8f9; background: #f0fdff; border-radius: 12px; padding: 14px; font-size: 0.85em; }
+  .pokayoke .pk-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #cffafe; gap: 8px; }
+  .pk-state { font-weight: 800; }
+  .pk-state.done { color: #047857; }
+  .pk-state.pending { color: #b45309; }
+  .pokayoke .pk-foot { margin-top: 10px; font-size: 0.88em; color: #0e7490; font-weight: 600; }
+
+  /* ---------- pain cards / capabilities ---------- */
+  .pain-grid, .cap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+  .pain-card {
+    border: 1px solid #fecaca; background: #fffafa; border-radius: 12px; padding: 16px;
+    transition: transform 0.2s ease;
+  }
+  .pain-card:hover { transform: translateY(-3px); }
+  .pain-card h4 { font-size: 0.98em; margin-bottom: 7px; color: #7f1d1d; }
+  .pain-card p { font-size: 0.84em; color: #4b5563; line-height: 1.5; }
+  .impact-chip {
+    display: inline-block; margin-top: 10px; background: #fee2e2; color: #b91c1c;
+    font-size: 0.78em; font-weight: 700; padding: 4px 10px; border-radius: 8px; line-height: 1.35;
+  }
+  .cap-item { border: 1px solid #bae6fd; background: #f8fdff; border-radius: 12px; padding: 16px; }
+  .cap-item h4 { font-size: 0.95em; color: #075985; margin-bottom: 6px; }
+  .cap-item p { font-size: 0.84em; color: #4b5563; line-height: 1.5; }
+
+  /* ---------- timeline ---------- */
+  .timeline { margin-top: 8px; }
+  .tl-event {
+    background: #fff; border: 1px solid #e5e7eb; border-left: 5px solid #ef4444;
+    border-radius: 10px; padding: 14px 16px; margin-bottom: 4px;
+  }
+  .timeline.win .tl-event { border-left-color: #10b981; }
+  .tl-time {
+    display: inline-block; background: #111827; color: #fbbf24; font-family: 'Consolas', monospace;
+    font-size: 0.78em; font-weight: 700; padding: 3px 10px; border-radius: 6px; margin-bottom: 6px;
+  }
+  .timeline.win .tl-time { color: #6ee7b7; }
+  .tl-event h4 { font-size: 1em; margin-bottom: 5px; color: #111827; }
+  .tl-event p { font-size: 0.86em; color: #4b5563; line-height: 1.5; }
+  .tl-problem { margin-top: 8px; font-size: 0.84em; font-weight: 700; color: #b91c1c; }
+  .tl-win { margin-top: 8px; font-size: 0.84em; font-weight: 700; color: #047857; }
+  .cascade { text-align: center; color: #ef4444; font-size: 1.05em; animation: cascade 1.4s infinite; padding: 2px 0 6px; }
+  .timeline.win .cascade { color: #10b981; }
+  @keyframes cascade { 0%,100% { transform: translateY(0);} 50% { transform: translateY(5px);} }
+
+  /* ---------- whiteboard + shift report ---------- */
+  .whiteboard {
+    background: #fefce8; border: 3px solid #a16207; border-radius: 12px; padding: 18px 22px;
+    font-family: 'Consolas', monospace; margin-top: 14px;
+  }
+  .whiteboard h4 { color: #713f12; margin-bottom: 10px; font-family: 'Segoe UI', sans-serif; }
+  .wb-item { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; font-size: 0.86em; color: #374151; border-bottom: 1px dashed #e7e5e4; }
+  .wb-item span:last-child { font-weight: 700; white-space: nowrap; }
+  .wb-total { display: flex; justify-content: space-between; margin-top: 10px; font-weight: 800; font-size: 1.02em; color: #b91c1c; }
+  .wb-total.good { color: #047857; }
+  .wb-foot { margin-top: 10px; font-size: 0.8em; font-style: italic; color: #b91c1c; }
+  .wb-foot.good { color: #047857; }
+
+  .shift-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-top: 14px; }
+  .shift-cell { border-radius: 10px; padding: 12px; text-align: center; background: #fef2f2; border: 1px solid #fecaca; }
+  .shift-cell .sc-value { font-weight: 800; font-size: 1.05em; color: #b91c1c; }
+  .shift-cell .sc-label { font-size: 0.74em; color: #6b7280; margin-top: 4px; }
+  .shift-grid.good .shift-cell { background: #f0fdf4; border-color: #bbf7d0; }
+  .shift-grid.good .sc-value { color: #047857; }
+
+  /* ---------- callouts ---------- */
+  .callout { border-radius: 14px; padding: 20px 24px; margin-bottom: 24px; }
+  .callout.warn { background: #fefce8; border: 2px solid #facc15; color: #713f12; }
+  .callout.info { background: #ecfeff; border: 2px solid #22d3ee; color: #155e75; }
+  .callout h3 { margin-bottom: 8px; }
+  .callout p { font-size: 0.92em; line-height: 1.55; }
+
+  /* ---------- tables ---------- */
+  .cmp-table { width: 100%; border-collapse: collapse; font-size: 0.88em; }
+  .cmp-table th { text-align: left; padding: 10px 12px; background: #111827; color: #e5e7eb; }
+  .cmp-table th:nth-child(2) { color: #fca5a5; }
+  .cmp-table th:nth-child(3) { color: #67e8f9; }
+  .cmp-table td { padding: 9px 12px; border-bottom: 1px solid #e5e7eb; vertical-align: top; }
+  .cmp-table td:first-child { font-weight: 700; color: #374151; }
+  .cmp-table td:nth-child(2) { color: #991b1b; }
+  .cmp-table td:nth-child(3) { color: #065f46; }
+  .cmp-table tr:nth-child(even) td { background: #fafafa; }
+
+  /* ---------- stat cards ---------- */
+  .stat-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+  .stat-card {
+    background: linear-gradient(160deg, #063b42, #0b5560); color: white; border-radius: 14px;
+    padding: 18px 16px; text-align: center;
+  }
+  .stat-card .stat-value { font-size: 1.5em; font-weight: 800; color: #4dd0e1; }
+  .stat-card .stat-label { font-size: 0.86em; font-weight: 700; margin-top: 5px; }
+  .stat-card .stat-sub { font-size: 0.74em; color: #9fd8e2; margin-top: 4px; }
+
+  /* ---------- control center ---------- */
+  .control-center { background: #0b1220; border-radius: 14px; padding: 20px 22px; color: #cbd5e1; }
+  .cc-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .cc-head h3 { color: #e2e8f0; font-size: 1.05em; }
+  .live-dot { width: 10px; height: 10px; border-radius: 50%; background: #ef4444; animation: liveDot 1.2s infinite; }
+  @keyframes liveDot { 50% { opacity: 0.25; } }
+  .cc-kpis { font-family: 'Consolas', monospace; font-size: 0.8em; color: #7dd3fc; margin-bottom: 12px; }
+  .feed { background: #060b16; border-radius: 10px; padding: 12px 14px; min-height: 190px; font-family: 'Consolas', monospace; font-size: 0.78em; line-height: 1.7; }
+  .feed-line { color: #a5f3fc; }
+  .feed-line.new { color: #fef08a; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  .action-btn {
+    background: linear-gradient(135deg, #0e7490, #22d3ee); color: white; border: none; cursor: pointer;
+    font-weight: 700; font-size: 0.85em; padding: 10px 16px; border-radius: 10px; transition: transform 0.2s ease;
+  }
+  .action-btn:hover { transform: translateY(-2px); }
+
+  /* ---------- modal ---------- */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(2,6,23,0.72); z-index: 50;
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: #0b1220; color: #cbd5e1; width: 100%; max-width: 640px; max-height: 82vh; overflow-y: auto;
+    border-radius: 14px; border: 1px solid #164e63; box-shadow: 0 18px 60px rgba(0,0,0,0.6);
+  }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid #164e63; position: sticky; top: 0; background: #0b1220; }
+  .modal-head h3 { color: #67e8f9; font-size: 1em; }
+  .modal-close { background: none; border: none; color: #94a3b8; font-size: 1.2em; cursor: pointer; }
+  .modal-close:hover { color: white; }
+  .modal-body { padding: 16px 18px; font-family: 'Consolas', monospace; font-size: 0.8em; line-height: 1.8; }
+  .modal-body .m-row { display: flex; justify-content: space-between; gap: 14px; border-bottom: 1px dashed #1e3a5f; padding: 3px 0; }
+  .modal-body .m-row span:last-child { text-align: right; }
+  .modal-body .ok { color: #4ade80; }
+  .modal-body .amber { color: #fbbf24; }
+  .modal-body .chain { color: #a5f3fc; }
+  .modal-body .m-note { margin-top: 10px; color: #94a3b8; font-style: italic; }
+
+  .footer { text-align: center; color: #9fb6bf; font-size: 0.82em; padding: 10px 0 30px; }
+
+  @media (max-width: 900px) {
+    .scene-grid { grid-template-columns: 1fr; }
+    .header h1 { font-size: 1.5em; }
+    .section { padding: 18px; }
+    .cmp-table { font-size: 0.78em; }
+    .toggle-btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <h1><span aria-hidden="true">💊</span> MES in <span class="accent">Pharma OSD Manufacturing</span></h1>
+    <p class="subtitle">Helvion Pharma — Plant 2 Lakeworth · Granulation to Serialized Carton · One Monday, Two Realities</p>
+  </div>
+
+  <div class="scenario-toggle">
+    <button id="btn-without" class="toggle-btn without active" aria-pressed="true">⚠️ Without MES — The Chaos</button>
+    <button id="btn-with" class="toggle-btn with" aria-pressed="false">✅ With MES — Precision &amp; Compliance</button>
+  </div>
+
+  <!-- ================= WITHOUT ================= -->
+  <div id="panel-without" class="scenario-panel active">
+    <div class="banner chaos">⚠️ PLANT CHAOS MODE ⚠️
+      <small>Whiteboard genealogy · frozen NIR probes · paper batch records · serialization roulette</small>
+    </div>
+
+    <div class="section chaos">
+      <h2>🏭 The Line Right Now — Nobody Knows the Real Status</h2>
+      <div id="w-stations" class="line-strip"></div>
+      <p class="caption bad">Six stations, one shift — and not one screen in the plant shows what is actually happening.</p>
+    </div>
+
+    <div class="section chaos">
+      <h2>👷‍♀️ 6:05 AM at Cartoner CR3 — Everything Looks the Same</h2>
+      <div id="w-confusion-scene" class="scene-grid"></div>
+      <div id="w-silo-note" class="silo-note"></div>
+      <p class="caption bad">🎰 Without order-to-material verification, every changeover is a gamble with a regulated medicine.</p>
+    </div>
+
+    <div class="section chaos">
+      <h2>🔥 Daily Reality Without MES</h2>
+      <p class="lead">Eleven ways an oral-solid-dose plant bleeds money and compliance when the data lives on paper.</p>
+      <div id="w-pain-grid" class="pain-grid"></div>
+    </div>
+
+    <div class="section chaos">
+      <h2>😱 The Monday Morning Nightmare — Pharma Edition</h2>
+      <p class="lead">Watch one lost sticky note, one frozen probe and one hand-written "CLEAN" tag cascade through an entire shift.</p>
+      <div id="w-timeline" class="timeline"></div>
+      <div id="w-whiteboard"></div>
+      <div id="w-shift-report"></div>
+    </div>
+
+    <div class="callout warn">
+      <h3>🎯 There is no single source of truth.</h3>
+      <p>The blend is on a whiteboard. The recipe is on a clipboard. The moisture is in a lab notebook — three
+      hours late. The IBC is "clean" because a cardboard tag says so. The carton artwork is "whatever was in the
+      magazine." The OEE is a guess. Six versions of reality, and the plant runs on the loudest one. <strong>The fix
+      is not more people checking — it is one system that knows, verifies, and remembers: a Manufacturing Execution
+      System.</strong></p>
+    </div>
+
+    <div class="section chaos">
+      <h2>📊 Plant 2 Today vs Industry Benchmark</h2>
+      <div id="w-bench-table"></div>
+    </div>
+  </div>
+
+  <!-- ================= WITH ================= -->
+  <div id="panel-with" class="scenario-panel">
+    <div class="banner calm">✅ PRECISION &amp; COMPLIANCE MODE ✅
+      <small>Genealogy-locked IBCs · inline SPC · machine-enforced materials · QP-ready by default</small>
+    </div>
+
+    <div class="section calm">
+      <h2>🏭 The Same Line — Every Station Tells the Truth</h2>
+      <div id="m-stations" class="line-strip"></div>
+      <p class="caption good">Same six stations. Every number is measured, every lot is identified, every carton is accountable.</p>
+    </div>
+
+    <div class="section calm">
+      <h2>💡 6:05 AM at Cartoner CR3 — The Machine Refuses to Be Wrong</h2>
+      <div id="m-workstation" class="scene-grid"></div>
+      <p class="caption good">🎯 Mei's judgment is now the last line of defense — not the only one.</p>
+    </div>
+
+    <div class="section calm">
+      <h2>🧠 What the MES Actually Does Here</h2>
+      <div id="m-cap-grid" class="cap-grid"></div>
+    </div>
+
+    <div class="section calm">
+      <h2>📈 Measured Results After Go-Live</h2>
+      <div id="m-stat-cards" class="stat-cards"></div>
+    </div>
+
+    <div class="section calm">
+      <h2>🖥️ MES Control Center — Live</h2>
+      <div class="control-center">
+        <div class="cc-head"><span class="live-dot" aria-hidden="true"></span><h3>LIVE PRODUCTION FEED — Plant 2</h3></div>
+        <div class="cc-kpis">OEE 63.5% · PR3: 4,000 tab/min · FBD2 LOD 2.02% · UI verify 100% · eBR exceptions open: 1</div>
+        <div id="m-ticker" class="feed" aria-live="polite"></div>
+        <div class="btn-row">
+          <button class="action-btn" data-modal="ebr" aria-label="View electronic batch record">📖 Electronic Batch Record</button>
+          <button class="action-btn" data-modal="trace" aria-label="Trace a carton">🔍 Trace a Carton (UI)</button>
+          <button class="action-btn" data-modal="alerts" aria-label="View active alerts">🔔 Active Alerts</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section calm">
+      <h2>🌤️ The Same Monday — With MES</h2>
+      <p class="lead">Same plant. Same people. Same 5:45 AM. Different information.</p>
+      <div id="m-timeline" class="timeline win"></div>
+      <div id="m-whiteboard"></div>
+      <div id="m-shift-report"></div>
+    </div>
+
+    <div class="section calm">
+      <h2>⚖️ Before / After</h2>
+      <div id="m-ba-table"></div>
+    </div>
+
+    <div class="callout info">
+      <h3>💰 The Bottom Line</h3>
+      <p><strong>Investment:</strong> €3–8M for an OSD MES with electronic batch records, serialization integration and
+      computer-system validation. <strong>Payback:</strong> 18–30 months from written-off batches avoided, release-cycle
+      inventory, OEE and overtime alone. And in this industry, half of this is not optional — <strong>batch-record
+      integrity, serialization and QP certification are a license to operate.</strong></p>
+    </div>
+  </div>
+
+  <div class="footer">Interactive MES demonstration for pharma OSD manufacturing training · Fictional company, products and data · 💡 Use the buttons at the top to switch realities.</div>
+</div>
+
+<!-- modal shell -->
+<div id="modal-overlay" class="modal-overlay">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-head">
+      <h3 id="modal-title"></h3>
+      <button id="modal-close" class="modal-close" aria-label="Close dialog">✕</button>
+    </div>
+    <div id="modal-body" class="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const DATA = {
+
+  stationsWithout: [
+    { icon: '⚖️', name: 'Dispensing (DSP1)', status: 'RECIPE = ???', cls: 'red', note: 'Scale prints stapled to a clipboard' },
+    { icon: '🌡️', name: 'Fluid-Bed Dryer (FBD2)', status: 'LOD FROZEN?', cls: 'red', note: 'NIR reads 2.0% for 9 h straight' },
+    { icon: '🛢️', name: 'IBC Staging', status: 'CONTENTS ???', cls: 'yellow', note: 'Whiteboard says IBC-0012 = CDX-10…' },
+    { icon: '⚙️', name: 'Press 3 (PR3)', status: 'LINE STOP', cls: 'red', note: 'Why? Ask the operator. Maybe.' },
+    { icon: '📦', name: 'Blister 3 → Cartoner CR3', status: 'RUNNING…?', cls: 'yellow', note: 'Which carton artwork is in the magazine? Unknown' },
+    { icon: '🏷️', name: 'Palletizer PZ1 / EU Hub', status: 'UPLOAD GAPS', cls: 'red', note: 'Camera bypassed "to keep shipping"' },
+  ],
+
+  stationsWith: [
+    { icon: '⚖️', name: 'Dispensing (DSP1)', kpi: 'B-CX-2417 · API-CDX-5512 40.000 kg', sub: 'e-signed ×2, ±0.1%' },
+    { icon: '🌡️', name: 'Fluid-Bed Dryer (FBD2)', kpi: 'LOD 2.02% · Cpk 1.8', sub: 'Inline NIR 1/sec, KF-validated' },
+    { icon: '🛢️', name: 'IBC Staging', kpi: 'IBC-0012: BLND-1834 · 400 kg', sub: 'Genealogy-locked Cardexil 10 mg' },
+    { icon: '⚙️', name: 'Press 3 (PR3)', kpi: '4,000 tab/min · reject 0.4%', sub: 'Per-tablet force SPC in control' },
+    { icon: '📦', name: 'Blister 3 → Cartoner CR3', kpi: '400 bpm · UI verify 100%', sub: '0 failed camera reads' },
+    { icon: '🏷️', name: 'Palletizer PZ1 / EU Hub', kpi: 'Aggregation 100% · SSCC live', sub: 'Commissioned to EU Hub ✓' },
+  ],
+
+  confusion: {
+    bins: [
+      { label: 'CARDEXIL 10 mg — Carton blanks · DOMESTIC', sub: 'artwork rev D-14', cls: '' },
+      { label: 'CARDEXIL 10 mg — Carton blanks · EXPORT (IT)', sub: 'artwork rev E-07 · AIC code ≠', cls: 'export' },
+      { label: 'CARDEXIL 20 mg — Carton blanks', sub: 'same blue-band artwork', cls: '' },
+      { label: 'ZENTRIX 50 mg — Carton blanks', sub: 'orange band — segregated Line 5!', cls: 'potent' },
+      { label: 'LIDDING FOIL — Lot FL-2216', sub: 'lot-tracked reel', cls: '' },
+      { label: 'VIGNETTES — VIG-IT-CDX10 · Lot VL-IT-0092', sub: 'lot-tracked bollino reel (export only)', cls: 'export' },
+    ],
+    rackCaption: '⚠️ Two of these differ only by a 9-digit AIC code and a 12 × 20 mm vignette window. Load the wrong one and every carton becomes a mislabeled medicine — a GMP deviation with a recall clock, not scrap.',
+    thought: '"Changeover to Cardexil at 6:00… but WHICH Cardexil? Ingrid\'s note just says \'CDX-10\'. Domestic and export blanks look identical from a metre away. If I run export cartons on a domestic order — or domestic cartons with no bollino for Italy — that\'s not scrap, that\'s a mislabeled medicine and a market complaint. Last time it cost €41,000 in destroyed cartons… and it was me who loaded the magazine."',
+    stress: [
+      '⏱️ Time comparing blanks by eye: 12 min/changeover',
+      '🔎 Verification method: squinting at a 9-digit code',
+      '❌ Wrong-blank incidents last quarter: 3',
+      '📦 Cartons produced before a wrong blank is noticed: up to 24,000',
+    ],
+    runCard: {
+      title: '📋 Current Run at Cartoner CR3',
+      rows: [
+        { label: 'Order #', value: '??? (paper batch-record travel copy missing)', bad: true },
+        { label: 'Product', value: '"CDX-10" — market unknown', bad: true },
+        { label: 'Vignette lot', value: 'not recorded', bad: true },
+        { label: 'Serial range link', value: 'none', bad: true },
+        { label: 'Setup verification', value: 'visual only', bad: true },
+      ],
+      footer: '🚨 No scanner. No interlock. Nothing physically stops the wrong blank.',
+    },
+    siloNote: '🌫️ Upstream it\'s worse: IBC-0012 and IBC-0021 both hold white granulate at 2.0% LOD. One is Cardexil 10 mg blend, one is Cardexil 20 mg. No human can tell them apart — <strong>only data knows which blend is which.</strong> Today, "data" is a whiteboard. And IBC-0044, back from Line 5, is "clean" because a cardboard tag says so.',
+  },
+
+  painCards: [
+    { icon: '🌫️', title: 'Blend Identity Blindness', body: 'Granulate and blend of every strength look identical: white powder at 2% LOD. IBC contents live on a whiteboard and in the night shift\'s memory. A press can run the wrong blend for hours and produce perfect-looking, wrong tablets.', impact: '💸 One wrong-blend press run = a whole 1.6 M-tablet batch destroyed, ~€600,000' },
+    { icon: '💧', title: 'Moisture (LOD) Guesswork', body: 'The inline NIR probe drifts or freezes; the lab LOD oven / Karl Fischer confirms hours later. Dryer end-points get chased by feel. Too wet = sticking, capping and microbial risk; too dry = friable tablets and dust.', impact: '💸 One out-of-window granulation = 400 kg quarantined, re-test and rework, ~€150,000' },
+    { icon: '📋', title: 'Paper Batch Records', body: 'Dispensing weights, granulation end-points and IPC results hand-written, transcribed at shift end, occasionally backfilled from memory. QA reviews 100% of 180 pages per batch — 12 days later. No complete record, no QP certificate, no sale.', impact: '💸 12-day release cycle = 3 batches of inventory permanently locked in quarantine + recurring audit findings' },
+    { icon: '🔍', title: 'Recall Archaeology', body: 'Tracing API lot → granulation → IBC → press run → blister → carton means days in a binder room. So recall scope becomes "every batch that touched that API lot" — or every batch that month.', impact: '💸 Whole-batch recall (80,000 cartons) instead of 6,800; €1.5 M+ per event' },
+    { icon: '🧼', title: 'Cleaning & Cross-Contamination Roulette', body: 'No enforced changeover procedure. A potent, intensely coloured ZTX-50 residue in a shared IBC — or a skipped swab — is a patient-safety event. Cleaning status is a hang-tag; crews clean "extra, to be safe" — or not enough.', impact: '💸 9–12 h defensive cleans every potent changeover — or a cross-contaminated batch reaching patients' },
+    { icon: '⚖️', title: 'Yield & Material Reconciliation Blindness', body: 'GMP demands every gram of API and every printed carton, leaflet and vignette be reconciled: in = out + rejects + samples + documented waste. Reconciliation happens at batch close, in Excel, with variances explained after the fact.', impact: '💸 A 0.4% unexplained vignette gap is a deviation with a regulator on the distribution list' },
+    { icon: '🤼', title: 'Blister–Cartoner Blame Game', body: 'The conveyor buffer between BL3 and CR3 hides who stopped whom. Blister crews blame cartoner jams; cartoner crews blame blister starvation. The line\'s #1 OEE loss — foil splices — has no owner.', impact: '💸 6–8 OEE points unattributed — therefore unfixable' },
+    { icon: '🏷️', title: 'Artwork, Vignette & Serialization Errors', body: 'Carton blanks loaded by eye; the serialization printer runs without order cross-check. A wrong-market carton is not scrap — it is a mislabeled medicine: deviation, EU Hub decommissioning, and supervised destruction.', impact: '💸 Last quarter\'s wrong-blank run: €41,000 + a regulator letter' },
+    { icon: '📡', title: 'Aggregation & Upload Gaps', body: 'When the case-packer camera faults, someone bypasses it "to keep shipping." Carton→bundle→case→pallet aggregation breaks; commissioning uploads to the EU Hub are reconciled at batch end — if anyone remembers.', impact: '💸 Pallets the wholesaler refuses; cartons that fail NMVS verification at the pharmacy' },
+    { icon: '📊', title: 'OEE by Anecdote', body: 'Downtime logged from memory at shift end ("foil jam, 45 min-ish"). At 400 blisters per minute nobody records the 6–9 second foil-splice stops at all.', impact: '💸 Believed OEE 55%, actual 45% — improvement projects aimed blind' },
+    { icon: '🧪', title: 'Lab–Line Data Gap', body: 'Karl Fischer results, per-tablet force stats (weight, hardness, thickness), IPC checks and machine data live in three systems plus paper. Nobody correlates LOD vs hardness vs rejects.', impact: '💸 A chronic 1.2% press reject rate accepted as "normal" — €380 k/yr of API in the deduster bin' },
+  ],
+
+  nightmare: [
+    { time: '5:45 AM', icon: '📝', title: 'Shift Handover by Sticky Note', body: 'Ingrid ends the night shift by sticking a note on the control desk: "IBC-0012 = CDX-10?? confirm w/ lab. CR3 → CDX-10 at 06:00. IBC-0044 back from L5 — clean." The note falls behind the desk. Rafael gets a 90-second verbal handover from an exhausted operator.', problem: '🚨 The only record of what\'s in IBC-0012 — which "CDX-10" — and whether IBC-0044 was ever swabbed is now behind a desk.' },
+    { time: '6:05 AM', icon: '🏷️', title: 'Mei Loads Export Blanks on a Domestic Order', body: 'No travel copy, note says "CDX-10". Mei picks the Cardexil 10 mg EXPORT (IT) blanks — visually identical to domestic. The serialization station prints DOMESTIC unique identifiers onto export cartons, with no bollino, at 200 cartons/min.', problem: '🚨 Nothing verifies the blank lot against the order. 24,000 mislabeled cartons will exist — and be commissioned to the EU Hub — before anyone looks closely.' },
+    { time: '6:30 AM', icon: '🧊', title: 'The Frozen Probe', body: 'Petr notices the FBD2 NIR reading: 2.0% LOD, perfectly flat for 9 hours. Perfectly flat means frozen. True LOD: 3.4% — wet granulate has flowed through milling into blend BLND-1835 all night.', problem: '🚨 Nobody trends sensor plausibility. The lab\'s Karl Fischer won\'t confirm for another 3½ hours.' },
+    { time: '7:10 AM', icon: '🛢️', title: 'Press 3 Runs From the IBC That Came Back From Line 5', body: 'Jonas starts PR3 from IBC-0044 — the whiteboard says CDX-10, blend BLND-1834. IBC-0044 carried Zentrix 50 mg blend on Friday and came back with a hand-written "CLEAN" tag. No swab record exists. Amara filled it with Cardexil blend at 04:00. The press runs at 4,000 tablets/min.', problem: '🚨 A hang-tag is not a cleaning record. Only data can prove an IBC is clean — and the data is a marker on cardboard.' },
+    { time: '8:20 AM', icon: '🧪', title: 'The Lab Result Lands Like a Bomb', body: 'Lucia\'s 04:50 samples finish on the Karl Fischer: BLND-1835 granulate at 3.3% LOD — outside the 1.5–2.5% window. Which sub-lots? Which IBCs? Paper can\'t say. Quarantine everything: 3 IBCs, 1,200 kg.', problem: '🚨 3.5-hour lab latency + zero genealogy = quarantine by geography, not by lot.' },
+    { time: '9:00 AM', icon: '🤼', title: 'The Blame-Game Meeting', body: 'Production blames maintenance (the probe). Maintenance blames QC (late results). The blister crew blames the cartoner crew for last week\'s OEE — the conveyor buffer hides the truth. 55 minutes, zero data on the table, zero decisions.', problem: '🚨 Without shared data, meetings produce opinions, not actions.' },
+    { time: '9:40 AM', icon: '😨', title: 'The Export Artwork Discovery', body: 'A QA auditor pulls one random carton and freezes: Italian AIC artwork, no bollino, domestic serial numbers — serials already commissioned to the EU Hub as domestic packs. ~24,000 cartons quarantined for supervised destruction; the serialization provider must decommission every one; the deviation goes to the regulator today.', problem: '🚨 A wrong carton isn\'t scrap. It\'s a mislabeled medicine — a deviation with a regulator on the distribution list.' },
+    { time: '10:30 AM', icon: '🧼', title: 'Cross-Contamination Scare on Press 3', body: 'A trainee mentions IBC-0044 came from the Line 5 (Zentrix 50 mg) wash bay on Friday. No swab record, no QA release — nobody can prove it\'s clean. Rafael halts PR3 and sends core samples to the lab for HPLC.', problem: '🚨 You cannot prove a negative without genealogy. Precautionary stop: 2 hours.' },
+    { time: '11:45 AM', icon: '🔬', title: 'The Contamination Is Found — by a Technician\'s Eye', body: 'An IPC technician spots faint orange specks in the tablet cores under the bench lamp. HPLC confirms Zentrix API at 42 ppm — far above the MACO limit. Batch B-CX-2417, 1.6 million tablets, API lot API-CDX-5512 and 5 hours of press time: written off.', problem: '🚨 The only contamination detector in the plant was a person\'s eyesight — 4.5 hours and one batch too late.' },
+    { time: '1:15 PM', icon: '📡', title: 'The Aggregation Hole', body: 'Omar reports the case-packer camera on CP1 has been faulted since 11:00 — a supervisor bypassed it "to keep shipping." 40 minutes of cases reached pallets with no carton→case scans. Those SSCCs have no aggregation record; the wholesaler\'s contract requires one.', problem: '🚨 Every unscanned case is a broken chain of custody. Those pallets cannot ship.' },
+    { time: '2:30 PM', icon: '📞', title: 'The Wholesaler Call', body: 'The Milan wholesaler: last week\'s shipment is on hold — two pallet SSCCs don\'t resolve in the EPCIS feed, and a sample carton returned "unknown serial" at NMVS verification because its batch upload never completed. Rafael spends 90 minutes rebuilding the story from paper.', problem: '🚨 Yesterday\'s shortcut is today\'s market incident.' },
+    { time: '3:45 PM', icon: '🧮', title: 'The Damage Whiteboard', body: 'Rafael stands at the whiteboard with a marker and starts adding it up — including the 12 days QA, QC and production will now spend reconstructing three batch records before a QP can certify anything. The room goes quiet.', problem: '🚨 See the board below. One shift.' },
+    { time: '5:00 PM', icon: '📉', title: 'End-of-Shift Report', body: 'Compiled by hand, an hour late, trusted by no one. Tomorrow starts exactly the same way.', problem: '🚨 Root causes documented today: zero.' },
+  ],
+
+  whiteboardWithout: {
+    heading: '🧮 The Damage Whiteboard — one Monday shift',
+    items: [
+      { label: 'Batch B-CX-2417 written off — ZTX-50 cross-contamination (1.6 M tablets, API lot API-CDX-5512, destruction)', amount: '€612,000' },
+      { label: 'Serialization-mismatch quarantine — 24,000 export cartons with domestic UIs destroyed + EU Hub decommissioning', amount: '€184,000' },
+      { label: '12 days of batch-record archaeology — 3 batches on hold, QP certification delayed, market stock-out cover', amount: '€156,000' },
+      { label: 'Wet granulate quarantined (1,200 kg BLND-1835: re-test, rework, partial write-off)', amount: '€148,000' },
+      { label: 'Held shipment penalties + expedited replacement to the wholesaler', amount: '€96,000' },
+      { label: 'Cross-contamination scare stop on PR3 (2 h) + HPLC testing + line clean', amount: '€38,500' },
+      { label: 'Deviation / CAPA handling, regulatory notification, legal', amount: '€28,000' },
+      { label: 'Overtime, re-testing, admin', amount: '€20,500' },
+    ],
+    total: '💸 TOTAL: €1,283,000 — one shift',
+    footnote: 'If the contaminated batch had reached patients: recall exposure €1.5 M+ and a regulator on site. And we still don\'t know exactly when the probe froze.',
+  },
+
+  shiftReportWithout: {
+    cells: [
+      { label: 'Cases packed', value: '214 / plan 300' },
+      { label: 'Pallets released', value: '0 — all on hold' },
+      { label: 'Quality holds', value: '3' },
+      { label: 'OEE (packaging)', value: '"45%?" — nobody trusts it' },
+      { label: 'Batch records complete', value: '0 of 3' },
+      { label: 'Root causes documented', value: '0' },
+    ],
+    caption: '📝 Plant manager\'s note: "We need to talk about that MES project we keep postponing…"',
+  },
+
+  sameMonday: [
+    { time: '5:45 AM', icon: '📱', title: 'Handover Is a System, Not a Sticky Note', body: 'Ingrid\'s handover is an electronic shift log: IBC-0012 = BLND-1834 Cardexil 10 mg (genealogy-verified); IBC-0044 = status CLEAN-PENDING-SWAB, blocked; order PO-77231 = Cardexil 10 mg DOMESTIC, batch B-CX-2417, at 06:00. Rafael reads it on the dashboard before his coffee.', win: '✅ Nothing depends on a sticky note.' },
+    { time: '6:05 AM', icon: '🚦', title: 'The Cartoner Refuses the Wrong Blank', body: 'Mei scans carton-blank lot CB-E-0731; the HMI flashes red: "BLANK NOT VALID FOR PO-77231 (DOMESTIC). Load CB-D-8813." The serialization station will not arm. Blanks swapped; changeover verified in 6 minutes.', win: '✅ 24,000 mislabeled cartons never exist.' },
+    { time: '6:30 AM', icon: '🛰️', title: 'The Probe Never Got to Lie', body: 'At 21:40 last night the MES flagged the FBD2 NIR probe: flatline 45 min — plausibility fault. Nights held the dryer on the reference method and a lab KF; Petr replaces the failed probe this morning on a planned work order.', win: '✅ Zero wet granulate entered BLND-1835.' },
+    { time: '7:10 AM', icon: '🔒', title: 'The IBC Dock Says No', body: 'Jonas badges into PR3 and docks IBC-0044; the MES checks its cleaning status — last product ZTX-50, swab results PENDING, no QA release — and blocks the charge: "IBC NOT RELEASED — potent-product clean unverified. Use IBC-0012 (BLND-1834)."', win: '✅ Zero cross-contamination. Ever.' },
+    { time: '8:20 AM', icon: '🧪', title: 'The Lab Confirms Instead of Detonating', body: 'Lucia\'s Karl Fischer results auto-import from LIMS and match the inline NIR within 0.1%. No quarantine; the lab\'s job today is validating sensors, not fighting fires.', win: '✅ 1,200 kg of granulate stays in the value stream.' },
+    { time: '9:00 AM', icon: '📊', title: 'The 15-Minute Meeting', body: 'Same meeting room, but a 24-hour loss Pareto is on the screen. #1 loss: BL3 foil splices, 41 minutes. One action assigned, one deadline. Done in 15 minutes.', win: '✅ Data ended the blame game before it started.' },
+    { time: '9:40 AM', icon: '🗂️', title: 'The Audit That Finds Nothing', body: 'The QA auditor pulls a carton: UI verifies at grade B, blank lot matches the order, no vignette expected for domestic, 100% camera-check records attached. Audit note: "no findings."', win: '✅ Compliance became a by-product of running the line.' },
+    { time: '10:30 AM', icon: '🧬', title: 'The Cross-Contamination Question, Answered in 40 Seconds', body: 'Same trainee, same question. Rafael queries genealogy — press run PR3-0724-A ← IBC-0012 ← BLND-1834 ← GB-1834; IBC-0012\'s last three products were all Cardexil; IBC-0044 is still blocked in the wash bay with swabs pending. Proven clean while standing at the press.', win: '✅ No stop. No HPLC panic. No fear.' },
+    { time: '11:45 AM', icon: '📈', title: 'A Drift Caught by Mathematics', body: 'PR3 tablet weight drifts +6 mg in 30 minutes (spec 250 mg ±5%); an SPC rule fires; Jonas adjusts the fill depth. The reject rate never leaves 0.4%. The eBR logs one exception — with its resolution.', win: '✅ The afternoon is saved and nobody outside the line even knows.' },
+    { time: '1:15 PM', icon: '📷', title: 'A Camera Fault Stays a Maintenance Issue', body: 'The case-packer camera on CP1 faults at 11:02. The MES halts case release automatically — no bypass without a QA e-signature. The buffer absorbs 12 minutes; the camera is fixed; zero unscanned cases.', win: '✅ A camera fault is maintenance, not a compliance hole.' },
+    { time: '2:30 PM', icon: '📞', title: 'The Wholesaler Calls — to Order More', body: 'All commissioning events and SSCCs were uploaded and acknowledged within minutes of palletizing; sample cartons verify at NMVS. The Milan wholesaler does call — to increase next month\'s Cardexil order.', win: '✅ No hold. No archaeology.' },
+    { time: '3:45 PM', icon: '🧮', title: 'The Whiteboard Stays Clean', body: 'Today\'s total losses: foil splices 41 min (action open) + camera repair 12 min + a planned 35-minute swab re-verification on IBC-0044 before it returns to the fleet. Rafael doesn\'t need the marker.', win: '✅ See the board below: €21,400 vs €1,283,000.' },
+    { time: '5:00 PM', icon: '📈', title: 'End-of-Shift Report — Generated, Not Compiled', body: 'The report writes itself from data everyone watched all day. Batch B-CX-2417\'s record is reviewed by exception — one exception, closed — and QP-ready tonight, not in 12 days. Same plant. Same people. Different information.', win: '✅ Root causes documented: 3 of 3.' },
+  ],
+
+  whiteboardWith: {
+    heading: '🧮 The Same Whiteboard — with MES',
+    items: [
+      { label: 'BL3 foil splices (41 min, action AB-112 open)', amount: '€12,600' },
+      { label: 'IBC-0044 swab re-verification before fleet return (35 min, planned)', amount: '€5,400' },
+      { label: 'Case-packer camera repair (12 min, buffer absorbed)', amount: '€3,400' },
+      { label: 'Wrong-artwork / serialization incidents', amount: '€0' },
+      { label: 'Cross-contaminated production', amount: '€0' },
+      { label: 'Quarantined granulate', amount: '€0' },
+      { label: 'EU Hub / wholesaler exposure', amount: '€0' },
+    ],
+    total: '✅ TOTAL: €21,400 — vs €1,283,000',
+    footnote: 'Same plant. Same Monday. The €1,261,600 difference is information.',
+  },
+
+  shiftReportWith: {
+    cells: [
+      { label: 'Cases packed', value: '308 (plan 300)' },
+      { label: 'Pallets released', value: '6 / 6 · 100% aggregation' },
+      { label: 'Quality holds', value: '0' },
+      { label: 'OEE (packaging)', value: '63.5% — measured, not guessed' },
+      { label: 'Batch record B-CX-2417', value: 'reviewed by exception · QP-ready' },
+      { label: 'Root causes documented', value: '3 of 3' },
+    ],
+    caption: '📈 Auto-generated at 17:00:04. Nobody stayed late to compile it.',
+  },
+
+  workstation: {
+    bins: [
+      { label: 'CARDEXIL 10 mg — Carton blanks · DOMESTIC', sub: 'CB-D-8813 ✓ scanned', cls: 'lit' },
+      { label: 'CARDEXIL 10 mg — Carton blanks · EXPORT (IT)', sub: '🔒 blocked for this order', cls: 'export locked' },
+      { label: 'CARDEXIL 20 mg — Carton blanks', sub: '🔒 blocked for this order', cls: 'locked' },
+      { label: 'ZENTRIX 50 mg — Carton blanks', sub: '🔒 wrong line — segregated', cls: 'potent locked' },
+      { label: 'LIDDING FOIL — FL-2216', sub: 'lot-verified for PO-77231', cls: 'lit' },
+      { label: 'VIGNETTES — VIG-IT-CDX10 · VL-IT-0092', sub: '🔒 not required for domestic — blocked', cls: 'export locked' },
+    ],
+    rackCaption: '✅ Pick-to-light + scan-to-order: only materials valid for PO-77231 can be loaded. Everything else is physically refused.',
+    terminal: {
+      title: 'CARTONER CR3 — ORDER & MATERIAL VERIFICATION',
+      lines: [
+        'Order PO-77231 · Cardexil 10 mg · DOMESTIC · batch B-CX-2417',
+        '<span class="ok">✓</span> Carton blank CB-D-8813 — scanned & matched (artwork rev D-14)',
+        '<span class="ok">✓</span> Leaflet LF-2210 · Lidding foil FL-2216',
+        '<span class="ok">✓</span> Serial range SRA-2417-01 allocated by HP2-SER — 80,000 serials',
+        '<span class="ok">✓</span> GTIN 00359123000108 · exp 2028-06 — printhead armed, camera linked',
+      ],
+    },
+    pokayoke: [
+      { text: 'Carton blank scanned vs order', state: 'done', label: '✓ Matched' },
+      { text: 'Market variant vs vignette requirement', state: 'done', label: '✓ Domestic — none' },
+      { text: 'UI printer ↔ camera handshake', state: 'done', label: '✓ OK' },
+      { text: 'Potent-product segregation check', state: 'done', label: '✓ Line 3 — non-potent' },
+      { text: 'First-carton DataMatrix grade', state: 'pending', label: '⏳ Pending' },
+    ],
+    pokayokeFoot: '🛡️ The cartoner will NOT start until every check passes.',
+  },
+
+  capabilities: [
+    { icon: '🧬', title: 'End-to-End Genealogy', body: 'API lot → granulation batch → blend lot (IBC ids) → press run + tooling set → coated batch → blister lot (film & foil) → carton UI → bundle → case → pallet SSCC. Forward and backward trace in seconds, not days.' },
+    { icon: '🚦', title: 'Physical Poka-Yoke Interlocks', body: 'IBC cleaning-status and blend verification at the press dock; blank/leaflet/foil scan-to-order validation at the cartoner. A mismatch doesn\'t raise a warning — the machine does not start.' },
+    { icon: '💧', title: 'Inline LOD with SPC + Lab Correlation', body: '1/sec inline NIR moisture with flatline and plausibility alarms; Karl Fischer and LOD-oven results auto-imported from LIMS and auto-compared, so a drifting probe is caught in minutes.' },
+    { icon: '📖', title: 'Electronic Batch Records', body: 'Weights, end-points and IPC results captured straight from scales and PLCs, e-signatures at the point of action (Annex 11 / Part 11), review by exception instead of 180 pages — 12 days → 1.5.' },
+    { icon: '🏷️', title: 'Serialization & FMD Compliance', body: 'UI printed and camera-verified on every carton from L4-allocated serial ranges; commissioning uploaded to the EU Hub via HP2-SER and acknowledged; aggregation carton→bundle→case→SSCC as best practice for the wholesaler and DSCSA-readiness.' },
+    { icon: '🧼', title: 'Cleaning & Segregation Control', body: 'Every asset and every IBC carries a cleaning status with swab results and QA release attached. Potent-product changeovers are enforced as interlocks: no release, no charge, no start.' },
+    { icon: '📉', title: 'True OEE with Loss Attribution', body: 'Automatic stop capture on blister AND cartoner with buffer-aware cause allocation — the 6–9 second foil splices finally have a count and an owner. The blame game ends because the data names the cause.' },
+    { icon: '🔄', title: 'Managed Changeovers & Hold-Time Clocks', body: 'Enforced electronic checklists for the 20 min / 2 h / 3 h / 6 h + lab changeover ladder; IBC and bulk-tablet hold times run as clocks that block the next step when they expire.' },
+  ],
+
+  statCards: [
+    { value: '0', label: 'Wrong-blend / wrong-artwork releases', sub: 'since go-live (was 3 per quarter)' },
+    { value: '4 min', label: 'Recall trace to exact carton serials', sub: '6,800 cartons — was 3 days / whole batches' },
+    { value: '45.0% → 63.5%', label: 'Packaging OEE, measured', sub: 'every loss attributed to a cause' },
+    { value: '1.5 days', label: 'Batch-record review cycle', sub: 'review by exception — was 12 days' },
+    { value: 'Cpk 1.8', label: 'LOD capability', sub: 'out-of-window granulations down 90%' },
+    { value: '€3.4M/yr', label: 'Measured savings', sub: 'write-offs, release inventory, OEE, overtime' },
+  ],
+
+  ticker: [
+    '07:41:22 · FBD2 LOD 2.02% — in control (target 2.0, window 1.5–2.5)',
+    '07:41:26 · CR3 UI verify 100% — 24,712 cartons, 0 failed reads',
+    '07:41:31 · POKA-YOKE: CR5 blocked blank load — carton lot CB-E-0731 invalid for order PO-77238',
+    '07:41:35 · PZ1: SSCC 003591230800127456 aggregated (48 cases) — commissioned to EU Hub via HP2-SER ✓',
+    '07:41:40 · PR3: weight x̄ 250.4 mg · hardness 112 N · reject 0.4% — SPC in control',
+    '07:41:44 · DSP1: API-CDX-5512 weighed 40.000 kg (±0.1%) — e-signed, second-person verified',
+    '07:41:49 · SPC ALERT: PR5 compression force trending high — tooling inspection auto-scheduled 14:00',
+    '07:41:53 · Genealogy: BLND-1835 → IBC-0021 (400 kg, Cardexil 10 mg) — hold-time clock started',
+    '07:41:58 · LIMS: Karl Fischer auto-matched to inline NIR — bias +0.08%, probe validated',
+    '07:42:02 · Changeover Line 5: ZTX-50 clean step 4/6 verified — swab results pending QA release',
+  ],
+
+  modals: {
+    ebr: {
+      title: '📖 Electronic Batch Record — Batch B-CX-2417 (Cardexil 10 mg)',
+      rows: [
+        ['Product', 'Cardexil 10 mg film-coated tablets (CDX-10)'],
+        ['Recipe', 'R-CDX-07 v12 (current approved)'],
+        ['Status', '<span class="ok">REVIEWED BY EXCEPTION — QP certificate QP-2417 issued</span>'],
+        ['API lot dispensed', 'API-CDX-5512 · 40.000 kg · e-signed ×2'],
+        ['Granulation', 'GB-1834 · endpoint 11.8 kW · massing 8 min'],
+        ['Dryer LOD', '<span class="ok">x̄ 2.02% · Cpk 1.82 ✓</span>'],
+        ['Blend', '<span class="ok">BLND-1834 · IBC-0012 · BU RSD 1.9% ✓</span>'],
+        ['Compression', '<span class="ok">PR3-0724-A · x̄ 250.4 mg · 112 N ✓</span>'],
+        ['Film coating', '<span class="ok">CO1 · CS-118 · weight gain 3.0% ✓</span>'],
+        ['Exceptions', '<span class="amber">1</span> — weight drift 11:45, closed, e-signed QC'],
+        ['QA review time', '90 minutes (by exception) — was 12 days'],
+      ],
+      note: 'Every value captured at source from scales, PLCs and LIMS — nothing transcribed, nothing backfilled.',
+    },
+    trace: {
+      title: '🔍 Carton Trace — GTIN 00359123000108 · SN 4T7K9DQ2CX41',
+      rows: [
+        ['📦 Carton', 'CR3 · 07:14:32 · PO-77231 Domestic · batch B-CX-2417 · exp 2028-06 · camera PASS'],
+        ['↳ Bundle', 'BN-2417-88 (10 cartons)'],
+        ['↳ Case', 'CS-2417-31 (200 cartons · GTIN 20359123000317)'],
+        ['↳ Pallet', '<span class="ok">SSCC 003591230800127456 — EU Hub commissioned ✓</span>'],
+        ['↳ Blister lot', 'BL3 · foil FL-2216 · leaflet LF-2210'],
+        ['↳ Press run', 'PR3-0724-A · coated on CO1 with CS-118'],
+        ['↳ Blend lot', 'BLND-1834 · IBC-0012'],
+        ['↳ Granulation batch', 'GB-1834'],
+        ['↳ API lot', 'API-CDX-5512'],
+      ],
+      note: 'Forward trace: coating-suspension lot CS-118 touched 6,800 cartons — exact serial list attached. Query time: 4 seconds.',
+    },
+    alerts: {
+      title: '🔔 Active Alerts — Plant 2 (3)',
+      rows: [
+        ['<span class="amber">🟠 PR5</span>', 'Compression-force SPC trend — tooling inspection 14:00 · ACK Jonas'],
+        ['<span class="amber">🟠 BL3</span>', 'Foil splices above target (41 min / 24 h) — action AB-112 open, due Fri'],
+        ['<span class="chain">🔵 FBD2</span>', 'NIR probe calibration due in 3 days — work order auto-scheduled'],
+      ],
+      note: 'Three alerts. All owned, all dated. Nothing is a surprise.',
+    },
+  },
+
+  benchTable: {
+    headers: ['Metric', 'Plant 2 Today', 'Industry Benchmark (MES-enabled)'],
+    rows: [
+      ['Packaging OEE (blister–cartoner)', '~45% (estimated)', '60–75% (measured)'],
+      ['Wrong-blend / wrong-artwork incidents', '3 per quarter', '≈0 — machine-interlocked'],
+      ['Recall trace time & scope', '3 days · "whole batches"', 'Minutes · exact carton serials'],
+      ['LOD (moisture) capability', 'Cpk 0.7 · lab lag 3.5 h', 'Cpk >1.5 · inline 1/sec + auto lab match'],
+      ['Batch-record review', '12 days, 100% manual', '1.5 days, by exception'],
+      ['Potent changeover (incl. clean)', '9–12 h defensive, tribal knowledge', '6 h + lab wait, guided & verified'],
+      ['Press reject rate', '1.2% — "normal"', '<0.5% with per-tablet SPC'],
+      ['Aggregation completeness', '~97%, gaps patched after', '100%, enforced at source'],
+      ['EU Hub upload', 'Batch-end, reconciled by hand', 'Per commissioning event, acknowledged'],
+    ],
+  },
+
+  baTable: {
+    headers: ['Capability', 'Without MES', 'With MES'],
+    rows: [
+      ['Blend identity in IBCs', 'Whiteboard + memory', 'Genealogy-locked, dock interlocks'],
+      ['Moisture (LOD) control', 'Frozen probes, 3.5 h lab lag', 'Inline SPC + automatic lab match'],
+      ['Batch records', 'Paper, 180 pages, backfilled', 'Electronic, e-signed, by exception'],
+      ['Recall scope', 'Whole batches / 3 days', '6,800 cartons / 4 minutes'],
+      ['Artwork, vignettes & UI', 'Visual check, no order link', 'Scan-to-order + 100% camera verify'],
+      ['Aggregation & EU Hub upload', 'Bypassable camera, batch-end upload', 'Enforced, acknowledged per event'],
+      ['Cleaning status', 'Hang-tags', 'Swab results + QA release as an interlock'],
+      ['Blister–cartoner losses', 'Blame game', 'Buffer-aware loss attribution'],
+      ['Changeover & potent clean', 'Tribal knowledge', 'Enforced, verified e-checklists'],
+      ['OEE (packaging)', '45%, guessed', '63.5%, measured'],
+      ['Shift handover', 'Sticky notes', 'Electronic log + live dashboard'],
+    ],
+  },
+};
+
+/* ---------------- render helpers ---------------- */
+
+function el(id) { return document.getElementById(id); }
+
+function renderStations() {
+  el('w-stations').innerHTML = DATA.stationsWithout.map(function (s, i) {
+    var arrow = i < DATA.stationsWithout.length - 1 ? '<div class="strip-arrow" aria-hidden="true">➜</div>' : '';
+    return '<div class="station problem">' +
+      '<div class="st-icon" aria-hidden="true">' + s.icon + '</div>' +
+      '<div class="st-name">' + s.name + '</div>' +
+      '<span class="pill ' + s.cls + '">' + s.status + '</span>' +
+      '<div class="st-note">' + s.note + '</div>' +
+      '</div>' + arrow;
+  }).join('');
+
+  el('m-stations').innerHTML = DATA.stationsWith.map(function (s, i) {
+    var arrow = i < DATA.stationsWith.length - 1 ? '<div class="strip-arrow" aria-hidden="true">➜</div>' : '';
+    return '<div class="station good">' +
+      '<div class="st-icon" aria-hidden="true">' + s.icon + '</div>' +
+      '<div class="st-name">' + s.name + '</div>' +
+      '<span class="pill green">' + s.kpi + '</span>' +
+      '<div class="st-note">' + s.sub + '</div>' +
+      '</div>' + arrow;
+  }).join('');
+}
+
+function binHtml(b) {
+  return '<div class="reel-bin ' + b.cls + '">' + b.label +
+    '<span class="bin-sub">' + b.sub + '</span></div>';
+}
+
+function renderConfusion() {
+  var c = DATA.confusion;
+  el('w-confusion-scene').innerHTML =
+    '<div class="scene-col"><h3>🗄️ Blank &amp; Material Rack — Cartoner CR3</h3>' +
+      '<div class="rack">' + c.bins.map(binHtml).join('') + '</div>' +
+      '<div class="rack-caption">' + c.rackCaption + '</div></div>' +
+    '<div class="scene-col operator-box"><h3>Operator Mei — 14 years on packaging lines</h3>' +
+      '<div class="operator" aria-hidden="true">👷‍♀️</div>' +
+      '<div class="thought-bubble">' + c.thought + '</div>' +
+      '<div class="stress-list">' + c.stress.map(function (s) { return '<div>' + s + '</div>'; }).join('') + '</div></div>' +
+    '<div class="scene-col"><h3>' + c.runCard.title + '</h3>' +
+      '<div class="run-card">' +
+        c.runCard.rows.map(function (r) {
+          return '<div class="rc-row"><span>' + r.label + '</span><span class="' + (r.bad ? 'bad' : '') + '">' + r.value + '</span></div>';
+        }).join('') +
+        '<div class="rc-foot">' + c.runCard.footer + '</div>' +
+      '</div></div>';
+  el('w-silo-note').innerHTML = c.siloNote;
+}
+
+function renderWorkstation() {
+  var w = DATA.workstation;
+  el('m-workstation').innerHTML =
+    '<div class="scene-col"><h3>🗄️ Same Rack — Pick-to-Light + Scan-to-Order</h3>' +
+      '<div class="rack">' + w.bins.map(binHtml).join('') + '</div>' +
+      '<div class="rack-caption" style="color:#065f46;">' + w.rackCaption + '</div></div>' +
+    '<div class="scene-col"><h3>🖥️ Order &amp; Material Verification</h3>' +
+      '<div class="terminal"><div class="t-title">' + w.terminal.title + '</div>' +
+        w.terminal.lines.map(function (l) { return '<div>' + l + '</div>'; }).join('') +
+        '<div><span class="cursor"></span></div></div></div>' +
+    '<div class="scene-col"><h3>🛡️ Poka-Yoke Checklist</h3>' +
+      '<div class="pokayoke">' +
+        w.pokayoke.map(function (p) {
+          return '<div class="pk-row"><span>' + p.text + '</span><span class="pk-state ' + p.state + '">' + p.label + '</span></div>';
+        }).join('') +
+        '<div class="pk-foot">' + w.pokayokeFoot + '</div>' +
+      '</div></div>';
+}
+
+function renderPainCards() {
+  el('w-pain-grid').innerHTML = DATA.painCards.map(function (p) {
+    return '<div class="pain-card"><h4><span aria-hidden="true">' + p.icon + '</span> ' + p.title + '</h4>' +
+      '<p>' + p.body + '</p><span class="impact-chip">' + p.impact + '</span></div>';
+  }).join('');
+}
+
+function renderCapabilities() {
+  el('m-cap-grid').innerHTML = DATA.capabilities.map(function (c) {
+    return '<div class="cap-item"><h4><span aria-hidden="true">' + c.icon + '</span> ' + c.title + '</h4><p>' + c.body + '</p></div>';
+  }).join('');
+}
+
+function renderStatCards() {
+  el('m-stat-cards').innerHTML = DATA.statCards.map(function (s) {
+    return '<div class="stat-card"><div class="stat-value">' + s.value + '</div>' +
+      '<div class="stat-label">' + s.label + '</div><div class="stat-sub">' + s.sub + '</div></div>';
+  }).join('');
+}
+
+function renderTimeline(elId, events, win) {
+  el(elId).innerHTML = events.map(function (e, i) {
+    var tail = win
+      ? '<div class="tl-win">' + e.win + '</div>'
+      : '<div class="tl-problem">' + e.problem + '</div>';
+    var arrow = i < events.length - 1
+      ? '<div class="cascade" aria-hidden="true">⬇ ' + (win ? '' : 'cascade ') + '⬇</div>'
+      : '';
+    return '<div class="tl-event"><span class="tl-time">' + e.time + '</span>' +
+      '<h4><span aria-hidden="true">' + e.icon + '</span> ' + e.title + '</h4>' +
+      '<p>' + e.body + '</p>' + tail + '</div>' + arrow;
+  }).join('');
+}
+
+function renderWhiteboard(elId, data, good) {
+  el(elId).innerHTML =
+    '<div class="whiteboard"><h4>' + data.heading + '</h4>' +
+    data.items.map(function (it) {
+      return '<div class="wb-item"><span>' + it.label + '</span><span>' + it.amount + '</span></div>';
+    }).join('') +
+    '<div class="wb-total ' + (good ? 'good' : '') + '"><span>' + data.total.split(':')[0] + ':</span><span>' + data.total.split(': ')[1] + '</span></div>' +
+    '<div class="wb-foot ' + (good ? 'good' : '') + '">' + data.footnote + '</div></div>';
+}
+
+function renderShiftReport(elId, data, good) {
+  el(elId).innerHTML =
+    '<div class="shift-grid ' + (good ? 'good' : '') + '">' +
+    data.cells.map(function (c) {
+      return '<div class="shift-cell"><div class="sc-value">' + c.value + '</div><div class="sc-label">' + c.label + '</div></div>';
+    }).join('') + '</div>' +
+    '<p class="caption ' + (good ? 'good' : 'bad') + '">' + data.caption + '</p>';
+}
+
+function renderTable(elId, tbl) {
+  el(elId).innerHTML =
+    '<table class="cmp-table"><thead><tr>' +
+    tbl.headers.map(function (h) { return '<th>' + h + '</th>'; }).join('') +
+    '</tr></thead><tbody>' +
+    tbl.rows.map(function (r) {
+      return '<tr>' + r.map(function (c) { return '<td>' + c + '</td>'; }).join('') + '</tr>';
+    }).join('') + '</tbody></table>';
+}
+
+/* ---------------- interactions ---------------- */
+
+function showScenario(id) {
+  var without = id === 'without';
+  el('panel-without').classList.toggle('active', without);
+  el('panel-with').classList.toggle('active', !without);
+  el('btn-without').classList.toggle('active', without);
+  el('btn-with').classList.toggle('active', !without);
+  el('btn-without').setAttribute('aria-pressed', String(without));
+  el('btn-with').setAttribute('aria-pressed', String(!without));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+var tickerIndex = 0;
+function pushTickerLine() {
+  var feed = el('m-ticker');
+  var line = document.createElement('div');
+  line.className = 'feed-line new';
+  line.textContent = '▸ ' + DATA.ticker[tickerIndex % DATA.ticker.length];
+  tickerIndex += 1;
+  feed.insertBefore(line, feed.firstChild);
+  setTimeout(function () { line.classList.remove('new'); }, 1200);
+  while (feed.children.length > 8) feed.removeChild(feed.lastChild);
+}
+
+function startTicker() {
+  for (var i = 0; i < 4; i += 1) pushTickerLine();
+  setInterval(pushTickerLine, 4000);
+}
+
+function openModal(key) {
+  var m = DATA.modals[key];
+  if (!m) return;
+  el('modal-title').innerHTML = m.title;
+  el('modal-body').innerHTML =
+    m.rows.map(function (r) {
+      return '<div class="m-row"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>';
+    }).join('') +
+    '<div class="m-note">' + m.note + '</div>';
+  el('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  el('modal-close').focus();
+}
+
+function closeModal() {
+  el('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* ---------------- init ---------------- */
+
+document.addEventListener('DOMContentLoaded', function () {
+  renderStations();
+  renderConfusion();
+  renderWorkstation();
+  renderPainCards();
+  renderCapabilities();
+  renderStatCards();
+  renderTimeline('w-timeline', DATA.nightmare, false);
+  renderTimeline('m-timeline', DATA.sameMonday, true);
+  renderWhiteboard('w-whiteboard', DATA.whiteboardWithout, false);
+  renderWhiteboard('m-whiteboard', DATA.whiteboardWith, true);
+  renderShiftReport('w-shift-report', DATA.shiftReportWithout, false);
+  renderShiftReport('m-shift-report', DATA.shiftReportWith, true);
+  renderTable('w-bench-table', DATA.benchTable);
+  renderTable('m-ba-table', DATA.baTable);
+
+  el('btn-without').addEventListener('click', function () { showScenario('without'); });
+  el('btn-with').addEventListener('click', function () { showScenario('with'); });
+
+  document.querySelectorAll('.action-btn[data-modal]').forEach(function (btn) {
+    btn.addEventListener('click', function () { openModal(btn.getAttribute('data-modal')); });
+  });
+  el('modal-close').addEventListener('click', closeModal);
+  el('modal-overlay').addEventListener('click', function (e) {
+    if (e.target === el('modal-overlay')) closeModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  startTicker();
+});
+</script>
+<style>
+  .gate-overlay { position: fixed; inset: 0; z-index: 1000; background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); display: flex; align-items: center; justify-content: center; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  .gate-card { background: #fff; border-radius: 18px; padding: 30px 28px; width: 100%; max-width: 360px; box-shadow: 0 18px 60px rgba(0,0,0,0.5); }
+  .gate-brand { text-align: center; margin-bottom: 16px; }
+  .gate-logo { width: 54px; height: 54px; border-radius: 14px; background: #3730a3; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5em; }
+  .gate-brand h2 { font-size: 1.15em; color: #111827; margin-top: 10px; }
+  .gate-brand p { font-size: 0.8em; color: #6b7280; margin-top: 3px; }
+  .gate-card label { display: block; font-size: 0.8em; font-weight: 600; color: #374151; margin: 10px 0 4px; }
+  .gate-card input { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 0.95em; outline: none; box-sizing: border-box; }
+  .gate-card input:focus { border-color: #3730a3; box-shadow: 0 0 0 3px rgba(55,48,163,0.15); }
+  .gate-btn { width: 100%; margin-top: 16px; padding: 11px; border: none; border-radius: 10px; background: #3730a3; color: #fff; font-weight: 700; font-size: 0.95em; cursor: pointer; }
+  .gate-btn:hover { background: #312e81; }
+  .gate-alt { display: block; width: 100%; text-align: center; background: none; border: none; color: #6b7280; font-size: 0.8em; margin-top: 12px; cursor: pointer; text-decoration: underline; }
+  .gate-alt:hover { color: #3730a3; }
+  .gate-msg { margin-top: 10px; font-size: 0.82em; color: #b91c1c; background: #fee2e2; border-radius: 8px; padding: 8px 10px; display: none; }
+  .gate-msg.ok { color: #047857; background: #d1fae5; }
+  body.gate-locked { overflow: hidden; }
+</style>
+<script>
+(function () {
+  var KEY_AUTH = 'pharmaShowcaseAuth';
+  var KEY_PASS = 'pharmaShowcasePass';
+  var CODE = '1208';
+  var DEFAULT_PASS = 'dec25';
+
+  try { if (sessionStorage.getItem(KEY_AUTH) === 'ok') return; } catch (e) { return; }
+
+  function currentPass() {
+    try { return localStorage.getItem(KEY_PASS) || DEFAULT_PASS; } catch (e) { return DEFAULT_PASS; }
+  }
+
+  var ov = document.createElement('div');
+  ov.className = 'gate-overlay';
+  ov.innerHTML =
+    '<div class="gate-card">' +
+      '<div class="gate-brand"><span class="gate-logo" aria-hidden="true">💊</span>' +
+      '<h2>Helvion Pharma</h2><p>MES Practitioner Training — sign in to continue</p></div>' +
+      '<form id="gate-login">' +
+        '<label for="gate-user">Username</label><input id="gate-user" type="text" autocomplete="off">' +
+        '<label for="gate-pass">Password</label><input id="gate-pass" type="password">' +
+        '<div id="gate-login-msg" class="gate-msg"></div>' +
+        '<button type="submit" class="gate-btn">Enter Training</button>' +
+        '<button type="button" id="gate-to-reset" class="gate-alt">Change password (instructor)</button>' +
+      '</form>' +
+      '<form id="gate-reset" style="display:none">' +
+        '<label for="gate-code">Security code</label><input id="gate-code" type="password">' +
+        '<label for="gate-new">New password</label><input id="gate-new" type="password">' +
+        '<label for="gate-confirm">Confirm password</label><input id="gate-confirm" type="password">' +
+        '<div id="gate-reset-msg" class="gate-msg"></div>' +
+        '<button type="submit" class="gate-btn">Update Password</button>' +
+        '<button type="button" id="gate-to-login" class="gate-alt">Back to sign in</button>' +
+      '</form>' +
+    '</div>';
+
+  document.body.appendChild(ov);
+  document.body.classList.add('gate-locked');
+
+  function msg(id, text, ok) {
+    var m = document.getElementById(id);
+    m.textContent = text;
+    m.className = 'gate-msg' + (ok ? ' ok' : '');
+    m.style.display = 'block';
+  }
+
+  document.getElementById('gate-login').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var u = document.getElementById('gate-user').value.trim().toLowerCase();
+    var p = document.getElementById('gate-pass').value;
+    if (u === 'mes' && p === currentPass()) {
+      try { sessionStorage.setItem(KEY_AUTH, 'ok'); } catch (err) {}
+      document.body.classList.remove('gate-locked');
+      ov.remove();
+    } else {
+      msg('gate-login-msg', 'Invalid username or password', false);
+    }
+  });
+
+  document.getElementById('gate-reset').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var code = document.getElementById('gate-code').value;
+    var np = document.getElementById('gate-new').value;
+    var cp = document.getElementById('gate-confirm').value;
+    if (code !== CODE) { msg('gate-reset-msg', 'Incorrect security code', false); return; }
+    if (np.length < 4) { msg('gate-reset-msg', 'New password must be at least 4 characters', false); return; }
+    if (np !== cp) { msg('gate-reset-msg', 'Passwords do not match', false); return; }
+    try { localStorage.setItem(KEY_PASS, np); } catch (err) {}
+    msg('gate-reset-msg', 'Password updated — use it to sign in', true);
+  });
+
+  document.getElementById('gate-to-reset').addEventListener('click', function () {
+    document.getElementById('gate-login').style.display = 'none';
+    document.getElementById('gate-reset').style.display = 'block';
+  });
+  document.getElementById('gate-to-login').addEventListener('click', function () {
+    document.getElementById('gate-reset').style.display = 'none';
+    document.getElementById('gate-login').style.display = 'block';
+  });
+
+  document.getElementById('gate-user').focus();
+})();
+</script>
+</body>
+</html>

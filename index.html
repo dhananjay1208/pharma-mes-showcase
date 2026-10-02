@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Helvion Pharma MES Showcase — Plant 2 Lakeworth</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    min-height: 100vh; padding: 24px; color: #1f2937;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .wrap { max-width: 1120px; width: 100%; }
+  .header { text-align: center; color: white; margin-bottom: 34px; }
+  .header h1 { font-size: 2.1em; margin-bottom: 10px; }
+  .header h1 .accent { color: #4dd0e1; }
+  .header p { color: #b3c7cf; font-size: 1.02em; }
+  .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+  .card {
+    background: white; border-radius: 18px; padding: 28px; text-decoration: none; color: #1f2937;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35); transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: block;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.45); }
+  .card .icon { font-size: 2.3em; }
+  .card h2 { font-size: 1.2em; margin: 12px 0 8px; }
+  .card p { font-size: 0.9em; color: #6b7280; line-height: 1.55; }
+  .card .go {
+    display: inline-block; margin-top: 16px; font-weight: 700; font-size: 0.9em;
+    color: white; padding: 9px 18px; border-radius: 24px;
+  }
+  .card.compare { border-top: 6px solid #e53935; }
+  .card.compare .go { background: linear-gradient(135deg, #b71c1c, #e53935); }
+  .card.isa { border-top: 6px solid #4f46e5; }
+  .card.isa .go { background: linear-gradient(135deg, #312e81, #4f46e5); }
+  .card.gloss { border-top: 6px solid #14b8a6; }
+  .card.gloss .go { background: linear-gradient(135deg, #0f766e, #14b8a6); }
+  .foot { text-align: center; color: #9fb6bf; font-size: 0.8em; margin-top: 30px; line-height: 1.6; }
+  .foot a { color: #4dd0e1; }
+  @media (max-width: 980px) { .cards { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 760px) { .cards { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <h1>💊 Helvion Pharma <span class="accent">MES</span> Showcase</h1>
+      <p>Helvion Pharma · Plant 2 Lakeworth — companion pages for the MES Practitioner programme (oral solid dose)</p>
+    </div>
+    <div class="cards">
+      <a class="card compare" href="pharma-mes-comparison.html">
+        <div class="icon" aria-hidden="true">⚖️</div>
+        <h2>Without MES vs With MES</h2>
+        <p>One Monday, two realities: the €1,283,000 nightmare shift — a hang-tagged IBC, a frozen NIR probe,
+        the wrong carton artwork under a live serialization printer — and the same Monday replayed with genealogy
+        locks, cleaning interlocks, review-by-exception batch records and inline SPC.</p>
+        <span class="go">Enter the plant →</span>
+      </a>
+      <a class="card isa" href="pharma-isa95-training.html">
+        <div class="icon" aria-hidden="true">🏛️</div>
+        <h2>ISA-95 for Pharma OSD Manufacturing</h2>
+        <p>The standard behind the MES: Purdue levels, Parts 1–5, data models, segments and B2MML — every concept
+        retold with Helvion's granulators, presses, IBC blend lots and serialized carton UIs. Ends with a
+        knowledge check.</p>
+        <span class="go">Learn the standard →</span>
+      </a>
+      <a class="card gloss" href="pharma-mes-glossary.html">
+        <div class="icon" aria-hidden="true">📖</div>
+        <h2>MES &amp; Pharma Glossary</h2>
+        <p>Every acronym from the programme in one searchable place — PLC, SCADA, OPC UA, Modbus, MQTT, ISA-95,
+        OEE, IDoc, FMD, LOD, eBR, QP and 120+ more, each explained in one or two plain lines. Printable as a handout.</p>
+        <span class="go">Look it up →</span>
+      </a>
+    </div>
+    <p class="foot">
+      Companion apps: <a href="https://mesfunctionspharma.netlify.app" target="_blank" rel="noopener">Pharma MES Functions app</a> ·
+      Fictional company, products and data for training purposes — no real drug names.
+    </p>
+  </div>
+<style>
+  .gate-overlay { position: fixed; inset: 0; z-index: 1000; background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); display: flex; align-items: center; justify-content: center; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  .gate-card { background: #fff; border-radius: 18px; padding: 30px 28px; width: 100%; max-width: 360px; box-shadow: 0 18px 60px rgba(0,0,0,0.5); }
+  .gate-brand { text-align: center; margin-bottom: 16px; }
+  .gate-logo { width: 54px; height: 54px; border-radius: 14px; background: #3730a3; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5em; }
+  .gate-brand h2 { font-size: 1.15em; color: #111827; margin-top: 10px; }
+  .gate-brand p { font-size: 0.8em; color: #6b7280; margin-top: 3px; }
+  .gate-card label { display: block; font-size: 0.8em; font-weight: 600; color: #374151; margin: 10px 0 4px; }
+  .gate-card input { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 0.95em; outline: none; box-sizing: border-box; }
+  .gate-card input:focus { border-color: #3730a3; box-shadow: 0 0 0 3px rgba(55,48,163,0.15); }
+  .gate-btn { width: 100%; margin-top: 16px; padding: 11px; border: none; border-radius: 10px; background: #3730a3; color: #fff; font-weight: 700; font-size: 0.95em; cursor: pointer; }
+  .gate-btn:hover { background: #312e81; }
+  .gate-alt { display: block; width: 100%; text-align: center; background: none; border: none; color: #6b7280; font-size: 0.8em; margin-top: 12px; cursor: pointer; text-decoration: underline; }
+  .gate-alt:hover { color: #3730a3; }
+  .gate-msg { margin-top: 10px; font-size: 0.82em; color: #b91c1c; background: #fee2e2; border-radius: 8px; padding: 8px 10px; display: none; }
+  .gate-msg.ok { color: #047857; background: #d1fae5; }
+  body.gate-locked { overflow: hidden; }
+</style>
+<script>
+(function () {
+  var KEY_AUTH = 'pharmaShowcaseAuth';
+  var KEY_PASS = 'pharmaShowcasePass';
+  var CODE = '1208';
+  var DEFAULT_PASS = 'dec25';
+
+  try { if (sessionStorage.getItem(KEY_AUTH) === 'ok') return; } catch (e) { return; }
+
+  function currentPass() {
+    try { return localStorage.getItem(KEY_PASS) || DEFAULT_PASS; } catch (e) { return DEFAULT_PASS; }
+  }
+
+  var ov = document.createElement('div');
+  ov.className = 'gate-overlay';
+  ov.innerHTML =
+    '<div class="gate-card">' +
+      '<div class="gate-brand"><span class="gate-logo" aria-hidden="true">💊</span>' +
+      '<h2>Helvion Pharma</h2><p>MES Practitioner Training — sign in to continue</p></div>' +
+      '<form id="gate-login">' +
+        '<label for="gate-user">Username</label><input id="gate-user" type="text" autocomplete="off">' +
+        '<label for="gate-pass">Password</label><input id="gate-pass" type="password">' +
+        '<div id="gate-login-msg" class="gate-msg"></div>' +
+        '<button type="submit" class="gate-btn">Enter Training</button>' +
+        '<button type="button" id="gate-to-reset" class="gate-alt">Change password (instructor)</button>' +
+      '</form>' +
+      '<form id="gate-reset" style="display:none">' +
+        '<label for="gate-code">Security code</label><input id="gate-code" type="password">' +
+        '<label for="gate-new">New password</label><input id="gate-new" type="password">' +
+        '<label for="gate-confirm">Confirm password</label><input id="gate-confirm" type="password">' +
+        '<div id="gate-reset-msg" class="gate-msg"></div>' +
+        '<button type="submit" class="gate-btn">Update Password</button>' +
+        '<button type="button" id="gate-to-login" class="gate-alt">Back to sign in</button>' +
+      '</form>' +
+    '</div>';
+
+  document.body.appendChild(ov);
+  document.body.classList.add('gate-locked');
+
+  function msg(id, text, ok) {
+    var m = document.getElementById(id);
+    m.textContent = text;
+    m.className = 'gate-msg' + (ok ? ' ok' : '');
+    m.style.display = 'block';
+  }
+
+  document.getElementById('gate-login').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var u = document.getElementById('gate-user').value.trim().toLowerCase();
+    var p = document.getElementById('gate-pass').value;
+    if (u === 'mes' && p === currentPass()) {
+      try { sessionStorage.setItem(KEY_AUTH, 'ok'); } catch (err) {}
+      document.body.classList.remove('gate-locked');
+      ov.remove();
+    } else {
+      msg('gate-login-msg', 'Invalid username or password', false);
+    }
+  });
+
+  document.getElementById('gate-reset').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var code = document.getElementById('gate-code').value;
+    var np = document.getElementById('gate-new').value;
+    var cp = document.getElementById('gate-confirm').value;
+    if (code !== CODE) { msg('gate-reset-msg', 'Incorrect security code', false); return; }
+    if (np.length < 4) { msg('gate-reset-msg', 'New password must be at least 4 characters', false); return; }
+    if (np !== cp) { msg('gate-reset-msg', 'Passwords do not match', false); return; }
+    try { localStorage.setItem(KEY_PASS, np); } catch (err) {}
+    msg('gate-reset-msg', 'Password updated — use it to sign in', true);
+  });
+
+  document.getElementById('gate-to-reset').addEventListener('click', function () {
+    document.getElementById('gate-login').style.display = 'none';
+    document.getElementById('gate-reset').style.display = 'block';
+  });
+  document.getElementById('gate-to-login').addEventListener('click', function () {
+    document.getElementById('gate-reset').style.display = 'none';
+    document.getElementById('gate-login').style.display = 'block';
+  });
+
+  document.getElementById('gate-user').focus();
+})();
+</script>
+</body>
+</html>

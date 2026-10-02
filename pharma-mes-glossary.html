@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MES &amp; Pharma Glossary — Helvion Plant 2</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate icon" type="image/x-icon" href="/favicon.ico">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    min-height: 100vh; padding: 20px; color: #1f2937;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .header { text-align: center; color: white; margin-bottom: 22px; }
+  .header h1 { font-size: 2.1em; margin-bottom: 8px; }
+  .header h1 .accent { color: #4dd0e1; }
+  .header p { color: #b3c7cf; font-size: 1em; }
+  .backlink { display: inline-block; color: #4dd0e1; font-size: 0.85em; text-decoration: none; margin-bottom: 12px; }
+  .backlink:hover { text-decoration: underline; }
+
+  .toolbar {
+    background: white; border-radius: 16px; padding: 18px 20px; margin-bottom: 14px;
+    box-shadow: 0 8px 26px rgba(0,0,0,0.25);
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+  }
+  .toolbar input {
+    flex: 1; min-width: 220px; padding: 11px 14px; border: 1px solid #d1d5db; border-radius: 10px;
+    font-size: 1em; outline: none;
+  }
+  .toolbar input:focus { border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15,118,110,0.15); }
+  .count { font-size: 0.85em; color: #6b7280; white-space: nowrap; }
+  .count b { color: #111827; }
+  .print-btn {
+    border: none; border-radius: 10px; padding: 11px 18px; font-weight: 700; font-size: 0.9em;
+    color: white; background: linear-gradient(135deg, #0f766e, #14b8a6); cursor: pointer; white-space: nowrap;
+  }
+  .print-btn:hover { opacity: 0.9; }
+
+  .chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .chip {
+    border: none; border-radius: 20px; padding: 8px 14px; font-size: 0.82em; font-weight: 600;
+    background: rgba(255,255,255,0.12); color: #d7e3e8; cursor: pointer;
+  }
+  .chip:hover { background: rgba(255,255,255,0.22); }
+  .chip.active { background: #4dd0e1; color: #0f2027; }
+
+  .section {
+    background: white; border-radius: 16px; padding: 22px 24px; margin-bottom: 18px;
+    box-shadow: 0 8px 26px rgba(0,0,0,0.25); border-left: 6px solid #0f766e;
+  }
+  .section h2 { font-size: 1.25em; color: #111827; margin-bottom: 4px; }
+  .section .sub { font-size: 0.82em; color: #6b7280; margin-bottom: 14px; }
+  .term { padding: 10px 0; border-top: 1px solid #eef2f5; }
+  .term:first-of-type { border-top: none; }
+  .term .line { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .term .t { font-weight: 700; color: #312e81; font-size: 1em; }
+  .term .f { font-size: 0.8em; color: #6b7280; font-style: italic; }
+  .term .d { font-size: 0.9em; color: #374151; line-height: 1.5; margin-top: 3px; }
+  mark { background: #fef08a; border-radius: 3px; padding: 0 1px; }
+
+  .noresults {
+    background: white; border-radius: 16px; padding: 34px; text-align: center; color: #6b7280;
+    box-shadow: 0 8px 26px rgba(0,0,0,0.25); display: none;
+  }
+  .foot { text-align: center; color: #9fb6bf; font-size: 0.8em; margin: 26px 0 8px; line-height: 1.6; }
+  .foot a { color: #4dd0e1; }
+
+  .print-header { display: none; }
+
+  @media print {
+    @page { margin: 12mm; }
+    body { background: white !important; padding: 0; color: #111; }
+    .header, .backlink, .toolbar, .chips, .noresults, .foot, .gate-overlay { display: none !important; }
+    .print-header { display: block; border-bottom: 2px solid #111; padding-bottom: 8px; margin-bottom: 12px; }
+    .print-header h1 { font-size: 16pt; }
+    .print-header p { font-size: 9pt; color: #444; margin-top: 2px; }
+    .container { max-width: 100%; }
+    .section {
+      box-shadow: none; border: none; border-left: none; border-radius: 0;
+      padding: 0; margin: 0 0 10px 0; break-inside: auto;
+    }
+    .section h2 { font-size: 12pt; border-bottom: 1px solid #999; padding-bottom: 2px; margin-bottom: 6px; break-after: avoid; }
+    .section .sub { display: none; }
+    .terms { column-count: 2; column-gap: 10mm; }
+    .term { break-inside: avoid; border-top: none; padding: 3px 0; }
+    .term .t { font-size: 9.5pt; color: #111; }
+    .term .f { font-size: 8pt; }
+    .term .d { font-size: 8.5pt; line-height: 1.35; margin-top: 1px; color: #222; }
+    mark { background: none; font-weight: inherit; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <a class="backlink" href="index.html">← Back to the Training Showcase</a>
+    <div class="header">
+      <h1>📖 MES &amp; Pharma <span class="accent">Glossary</span></h1>
+      <p>Every acronym and term from the MES Practitioner programme — Helvion Pharma, Plant 2 Lakeworth (oral solid dose)</p>
+    </div>
+
+    <div class="print-header">
+      <h1>MES &amp; Pharma Glossary — MES Practitioner Training</h1>
+      <p>Helvion Pharma · Plant 2 Lakeworth · participant reference handout</p>
+    </div>
+
+    <div class="toolbar">
+      <input id="search" type="search" placeholder="Search terms… e.g. OPC, OEE, LOD, IDoc, FMD" autocomplete="off">
+      <span class="count"><b id="shown">0</b> of <b id="total">0</b> terms</span>
+      <button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    </div>
+
+    <div class="chips" id="chips"></div>
+
+    <div id="glossary"></div>
+
+    <div class="noresults" id="noresults">
+      <p style="font-size:1.6em">🔍</p>
+      <p style="margin-top:8px">No terms match your search. Try a shorter fragment — e.g. "OPC" instead of "OPC-UA".</p>
+    </div>
+
+    <p class="foot">
+      Part of the <a href="index.html">Helvion Pharma MES Showcase</a> · Fictional company, products and data for training purposes.
+    </p>
+  </div>
+
+<script>
+const CATEGORIES = {
+  auto:  { icon: "⚙️", name: "Automation & Control Basics",      sub: "The machine layer — what runs the equipment" },
+  proto: { icon: "🔌", name: "Protocols & Connectivity",          sub: "How systems talk to machines and each other" },
+  std:   { icon: "📐", name: "Standards, Models & Bodies",        sub: "The reference models and regulators behind everything in this training" },
+  mes:   { icon: "🏭", name: "MES & Manufacturing Operations",    sub: "Execution, performance, quality and traceability vocabulary" },
+  erp:   { icon: "💼", name: "ERP & Business Systems",            sub: "The business layer and its integration language" },
+  tt:    { icon: "🛃", name: "Serialization, Track & Trace / Compliance", sub: "EU FMD, the EU Hub, aggregation and the release law" },
+  osd:   { icon: "💊", name: "OSD Process & GxP Terms",           sub: "From API drum to a serialized, QP-certified carton" },
+};
+
+// {t: term, f: full expansion (may be ""), d: 1-2 line definition, c: category}
+const GLOSSARY = [
+  // ⚙️ Automation & Control Basics
+  { c:"auto", t:"PLC", f:"Programmable Logic Controller", d:"The machine's brain — an industrial computer scanning control logic in milliseconds to run motors, valves and sensors. Level 1 of the plant stack." },
+  { c:"auto", t:"SCADA", f:"Supervisory Control And Data Acquisition", d:"Level 2 software that supervises PLCs across an area — operator screens, alarms and trends above the individual machines." },
+  { c:"auto", t:"HMI", f:"Human-Machine Interface", d:"The operator's screen on or near a machine — buttons, states, alarms. The window into the PLC." },
+  { c:"auto", t:"I/O", f:"Inputs / Outputs", d:"The PLC's wired connections to the physical world — sensor signals in, actuator commands out. Systems are sized in 'I/O points'." },
+  { c:"auto", t:"Sensor / Actuator", f:"", d:"A sensor measures reality (temperature, moisture, force); an actuator changes it (valve, motor, damper). Everything above them depends on their honesty." },
+  { c:"auto", t:"VFD", f:"Variable Frequency Drive", d:"The electronics that control a motor's speed — how a tablet press turret ramps smoothly up to 4,000 tablets per minute, or a blister machine to 400 blisters per minute." },
+  { c:"auto", t:"PID loop", f:"Proportional–Integral–Derivative", d:"The classic control loop that holds a value at its target — e.g. the fluid-bed dryer modulating inlet-air temperature so granulate moisture (LOD) lands at 2.0%." },
+  { c:"auto", t:"Setpoint vs Process Value", f:"SP / PV", d:"SP is what you asked for; PV is what the sensor actually measures. Record both — the gap between them is information." },
+  { c:"auto", t:"Interlock", f:"", d:"A hard rule in control or MES: 'this cannot start until that is true.' Example: no recorded, QA-released ZTX-50 clean → Line 5 cannot start the next product, and an IBC with swab results pending cannot be charged to a press." },
+  { c:"auto", t:"Tag", f:"", d:"One named data point in an industrial system (a counter, a temperature, a state word). Integration work is deciding which tags to read, how fast, and in what units." },
+  { c:"auto", t:"Fault code / Reason code", f:"", d:"The PLC's numeric fault (e.g. 5203) and the human downtime reason it maps to ('foil splice fault'). That mapping table is built during MES integration. Plant 2's family: 3104 punch overload (PR3) · 5203 foil splice (BL3) · 2205 UI printhead · 4408 leaflet missing (CR3)." },
+  { c:"auto", t:"State word", f:"", d:"A single register encoding machine status — in Plant 2: 1 Running · 2 Starved · 3 Blocked · 4 Fault · 5 Changeover · 6 Idle." },
+  { c:"auto", t:"Blocked vs Starved", f:"", d:"Blocked: downstream can't accept (cartoner stopped, conveyor buffer full). Starved: upstream can't supply (blister magazine empty, bulk drum not released). Same lost minutes, opposite fixes." },
+  { c:"auto", t:"Poka-yoke", f:"", d:"Japanese for mistake-proofing — designing the process so the wrong action is physically or logically impossible (a wrong carton-blank lot won't let the order start; an unreleased IBC won't dock)." },
+  { c:"auto", t:"Edge gateway", f:"", d:"A small device beside the machines that speaks legacy protocols on one side and modern ones (OPC UA / MQTT) on the other — the bridge in every brownfield plant. Plant 2's packaging gateway EG-PKG-01 also fronts the serialization cameras, which speak a vendor API rather than OPC UA." },
+  { c:"auto", t:"Historian", f:"", d:"A time-series database built for plant data — compresses millions of sensor readings and answers 'what was the dryer doing at 03:12?' Plant 2's is HP2-HIST." },
+  { c:"auto", t:"Checkweigher", f:"", d:"An inline scale that weighs every carton at full speed and rejects out-of-weight ones (a missing leaflet or blister shows as grams) — also a great independent cross-check for MES counters. Plant 2's talks Modbus TCP." },
+
+  // 🔌 Protocols & Connectivity
+  { c:"proto", t:"OPC", f:"Open Platform Communications", d:"The family of standards that lets industrial software read data from controllers without a custom driver for every brand." },
+  { c:"proto", t:"OPC UA", f:"OPC Unified Architecture", d:"The modern, secure, cross-platform OPC: a browsable address space, typed data and subscriptions. The default way an MES reads PLCs today — e.g. opc.tcp://pr3-plc.hp2.local:4840." },
+  { c:"proto", t:"OPC DA (Classic)", f:"OPC Data Access", d:"The Windows/COM-era predecessor of OPC UA — still common on older machines, usually bridged through an edge gateway." },
+  { c:"proto", t:"NodeId", f:"", d:"The address of one value inside an OPC UA server, e.g. ns=2;s=PR3.Prod.TabCount. Mapping the wrong node records the wrong truth — deterministically." },
+  { c:"proto", t:"Modbus", f:"RTU (serial) / TCP (Ethernet)", d:"The 1979-vintage register-based protocol still everywhere on legacy devices: 16-bit numbers with no units and no meaning — the register map document is everything. A 16-bit counter rolls over at 65,535." },
+  { c:"proto", t:"MQTT", f:"Message Queuing Telemetry Transport", d:"A lightweight publish/subscribe messaging protocol: devices publish to a broker (the central post office that delivers every message to its topic's subscribers), anyone interested subscribes. The transport under most IIoT designs." },
+  { c:"proto", t:"Sparkplug B", f:"", d:"A specification on top of MQTT adding birth/death certificates, sequence numbers and typed metrics — so subscribers know device state and never miss a silent failure." },
+  { c:"proto", t:"UNS", f:"Unified Namespace", d:"An architecture pattern: one broker and one well-named topic tree (Plant/Area/Line/Machine/…) where systems publish once and everything else subscribes." },
+  { c:"proto", t:"EtherNet/IP & PROFINET", f:"", d:"Industrial real-time networks used INSIDE the machine between controller and devices. The MES reads the PLC — it does not join the fieldbus." },
+  { c:"proto", t:"Polling", f:"", d:"Reading a value on a fixed timer. Rule of thumb: an event is reliably seen only if it lasts ≥ 2× the polling period — at 30-second polls, a 7-second foil-splice stop on BL3 is invisible." },
+  { c:"proto", t:"Subscription / Report-by-exception", f:"", d:"The alternative to polling: the server watches the value and pushes changes as they happen — better fidelity, less network traffic." },
+  { c:"proto", t:"Store-and-forward", f:"", d:"Buffering data locally through a network outage and forwarding it later with original timestamps — no gaps in genealogy, and no serialization events lost on the way to the EU Hub." },
+  { c:"proto", t:"SoE", f:"Sequence of Events", d:"Event history ordered by SOURCE timestamps from synchronized clocks — because network arrival order lies when things buffer." },
+  { c:"proto", t:"API / REST", f:"Application Programming Interface", d:"The general IT way for two systems to talk over a network — REST (HTTP + JSON) is the most common flavor for MES↔business and MES↔serialization integrations." },
+  { c:"proto", t:"Middleware", f:"", d:"Software that sits between systems, translating and routing messages (e.g. between SAP IDocs and MES tables, or between MES and label printers) so neither needs to know the other's format." },
+  { c:"proto", t:"JSON / XML", f:"", d:"The two common text formats for structured data exchange — JSON for modern APIs, XML for older standards like B2MML and EPCIS event reporting." },
+
+  // 📐 Standards, Models & Bodies
+  { c:"std", t:"ISA", f:"International Society of Automation", d:"The professional body behind the automation standards used in this training (ISA-95, ISA-88, ISA-101…)." },
+  { c:"std", t:"ISA-95", f:"IEC 62264", d:"THE reference model for MES: plant levels 0–4, the equipment hierarchy (Enterprise → Site → Area → Line → Machine), and what flows between business and manufacturing systems." },
+  { c:"std", t:"ISA-88", f:"Batch control standard", d:"The standard for recipe-driven batch processes — how the dispensing, granulation and coating recipes of an OSD plant are modeled (procedure → unit procedure → operation → phase)." },
+  { c:"std", t:"MESA / MESA-11", f:"Manufacturing Enterprise Solutions Association", d:"The industry group whose classic model names the 11 MES functions this training is built around." },
+  { c:"std", t:"Purdue model", f:"", d:"The layered picture of plant systems: Level 0 process → 1 PLCs → 2 SCADA/HMI → 3 MES → 4 ERP. ISA-95 grew out of it." },
+  { c:"std", t:"B2MML", f:"Business To Manufacturing Markup Language", d:"The XML vocabulary that expresses ISA-95 objects (orders, materials, performance) so ERP and MES can exchange them." },
+  { c:"std", t:"GS1", f:"", d:"The global standards body for barcodes and identifiers — GTINs, SSCC pallet codes and the DataMatrix carton code all come from GS1. Helvion's company prefix is 0359123." },
+  { c:"std", t:"GMP / cGMP", f:"(current) Good Manufacturing Practice", d:"The quality-system rules for medicines manufacturing — documented, controlled, auditable ways of working. EU GMP (EudraLex Vol. 4) and 21 CFR Parts 210/211 in the US — inspected by EMA/national agencies (e.g. AIFA in Italy) and the FDA." },
+  { c:"std", t:"ICH", f:"International Council for Harmonisation", d:"The body that harmonizes pharma technical guidelines across regions — ICH Q7 (API GMP), Q8 (QbD), Q9 (risk), Q10 (quality system) shape how an OSD plant thinks." },
+
+  // 🏭 MES & Manufacturing Operations
+  { c:"mes", t:"MES", f:"Manufacturing Execution System", d:"Level 3 software that runs production in real time: orders, execution, quality, traceability, performance. The connective tissue between ERP and the machines." },
+  { c:"mes", t:"MOM", f:"Manufacturing Operations Management", d:"The broader umbrella around MES: production, quality, maintenance and inventory operations managed as one Level 3 domain." },
+  { c:"mes", t:"APS", f:"Advanced Planning & Scheduling", d:"The finite-capacity scheduler that sequences orders against real constraints and changeover costs. In Plant 2 it is external (Cadence APS) — the MES executes its plan and never re-sequences." },
+  { c:"mes", t:"OEE", f:"Overall Equipment Effectiveness", d:"Availability × Performance × Quality — the single number for how much good product a machine made versus what it theoretically could. Plant 2's packaging journey: 45.0% → 63.5%." },
+  { c:"mes", t:"Availability", f:"OEE component", d:"Share of planned time the machine was actually running — downtime eats it." },
+  { c:"mes", t:"Performance", f:"OEE component", d:"Actual speed versus rated speed while running — micro-stops and slow cycles eat it." },
+  { c:"mes", t:"Quality rate", f:"OEE component", d:"Share of output that was good first time — rejects eat it." },
+  { c:"mes", t:"Downtime", f:"", d:"Time the machine should have run but didn't — captured with a reason (fault, changeover, starved, blocked) so it can be attacked systematically." },
+  { c:"mes", t:"Micro-stop", f:"", d:"A stop of seconds, too short to be a downtime event — individually invisible, collectively a top OEE killer. BL3's 6–9 s foil-splice stops are the classic: you need fast data collection to even see them." },
+  { c:"mes", t:"Changeover", f:"", d:"Converting a line from one product to the next. Plant 2's ladder: strength change (same tooling) 20 min · product change, minor clean 2 h · format/tooling change 3 h · potent (ZTX-50) changeover 6 h + lab wait for swab results." },
+  { c:"mes", t:"Schedule adherence", f:"", d:"How faithfully the floor executed the released plan — the KPI planners judge a plant by, right next to OEE." },
+  { c:"mes", t:"Dispatching", f:"", d:"The MES function that tells each machine and team what to run next — with the right recipe, released materials and a clean, released asset, in the released sequence." },
+  { c:"mes", t:"Production order", f:"", d:"The instruction to make a quantity of a product ('batch B-CX-2417: 1.6 M tablets of Cardexil 10 mg') — born in ERP, executed and reported back by the MES." },
+  { c:"mes", t:"WIP", f:"Work In Progress", d:"Material that has started production but isn't finished product yet — e.g. a blend sitting in an IBC tote with its hold-time clock running." },
+  { c:"mes", t:"BOM", f:"Bill of Materials", d:"The recipe's parts list: which materials, in what quantities, go into one unit of product — API, excipients, coating, film, foil, leaflet, carton." },
+  { c:"mes", t:"Recipe", f:"", d:"The complete definition of HOW to make a product — parameters, setpoints, materials, steps — version-controlled (R-CDX-07 v12) and sent to machines by the MES." },
+  { c:"mes", t:"Master data", f:"", d:"The reference data everything depends on: materials, BOMs, routings, machines, recipes — kept synchronized between ERP and MES." },
+  { c:"mes", t:"Genealogy", f:"", d:"The parent-child record of what went into what: API lot → granulation batch → blend lot (IBC) → press run → coated batch → blister lot → carton UI → SSCC. A recall walks this chain in both directions." },
+  { c:"mes", t:"Traceability", f:"", d:"The ability to answer 'where did this come from, and where did it go?' in minutes — forward and backward through the genealogy." },
+  { c:"mes", t:"Lot / Batch", f:"", d:"A defined quantity of material treated as one identity for quality and release decisions. In OSD a batch is 400 kg of granulation ≈ 1.6 M tablets = 80,000 cartons = 400 cases ≈ 8.3 pallets — keep this in your head when a KPI looks wrong." },
+  { c:"mes", t:"eBR", f:"Electronic Batch Record", d:"The digital replacement for paper batch documentation — captured at source, e-signed, reviewable by exception. In pharma the batch record IS the product's legal twin: no complete record, no release." },
+  { c:"mes", t:"SPC", f:"Statistical Process Control", d:"Watching process data against control limits to catch drift BEFORE it becomes defects — control charts on per-tablet compression force at 4,000 tablets a minute." },
+  { c:"mes", t:"FPY", f:"First Pass Yield", d:"Share of production good on the first pass, without rework — the honest quality number. The press's auto-reject counters are half of it." },
+  { c:"mes", t:"KPI", f:"Key Performance Indicator", d:"Any metric a business steers by (OEE, FPY, adherence, release cycle time). Only ever as good as the data underneath it." },
+  { c:"mes", t:"IIoT / Industry 4.0", f:"Industrial Internet of Things", d:"The umbrella terms for connected sensors, machines and analytics across manufacturing — the modern context MES lives in." },
+
+  // 💼 ERP & Business Systems
+  { c:"erp", t:"ERP", f:"Enterprise Resource Planning", d:"The business brain (SAP here): orders, finance, materials, planning — Level 4. It knows what SHOULD happen; the MES knows what IS happening." },
+  { c:"erp", t:"SAP", f:"", d:"The dominant ERP vendor; Plant 2 runs SAP. 'SAP says…' usually means 'the business system of record says…'." },
+  { c:"erp", t:"IDoc", f:"Intermediate Document", d:"SAP's classic format for exchanging structured business documents between systems, asynchronously." },
+  { c:"erp", t:"LOIPRO", f:"", d:"The IDoc type carrying a process/production order from SAP to the MES — order, material, quantity, dates, plus custom fields (recipe version, market variant, serial-range reference)." },
+  { c:"erp", t:"Production confirmation", f:"", d:"The MES → ERP message reporting what was actually produced: quantities, times, consumption — so the business books match the shop floor." },
+  { c:"erp", t:"Goods movement", f:"", d:"Any inventory transaction posted to ERP — receipts, issues, transfers, quarantine-to-unrestricted. The MES generates them automatically from production events." },
+  { c:"erp", t:"Movement types 101 / 261", f:"", d:"SAP codes: 101 = goods receipt of finished product into (quarantine) stock; 261 = issue of materials to a production order (usually back-flushed)." },
+  { c:"erp", t:"Back-flush", f:"", d:"Posting material consumption automatically from what was produced (cartons made × BOM) instead of scanning every issue — reconciled at batch close." },
+  { c:"erp", t:"RFC / BAPI", f:"Remote Function Call / Business API", d:"SAP's mechanisms for real-time, synchronous integration calls — the immediate counterpart to the asynchronous IDoc." },
+  { c:"erp", t:"WMS", f:"Warehouse Management System", d:"Runs the warehouse: locations, put-away, picking, pallets — the system that knows WHERE a quarantined pallet physically sits." },
+  { c:"erp", t:"LIMS", f:"Laboratory Information Management System", d:"The lab's system: samples, tests, results (LOD oven, Karl Fischer, dissolution, assay) — the source the MES reconciles inline sensors against." },
+  { c:"erp", t:"CMMS", f:"Computerized Maintenance Management System", d:"Maintenance's system: work orders, preventive maintenance, calibration due-dates, spares — fed by MES condition data and machine counters." },
+  { c:"erp", t:"QMS", f:"Quality Management System", d:"The quality organization's system of record: deviations (any departure from the approved process, investigated), CAPAs (the corrective and preventive actions that stop recurrence), change controls, controlled documents." },
+  { c:"erp", t:"Quarantine stock", f:"", d:"Finished goods held in a restricted status until QP certification — physically in the warehouse, legally not yet a medicine that can be sold." },
+  { c:"erp", t:"Yield & material reconciliation", f:"", d:"GMP's arithmetic: every gram of API and every printed carton, leaflet and vignette in must reconcile to units out plus rejects, samples and documented waste. An unexplained gap is a deviation, not a rounding error." },
+
+  // 🛃 Serialization, Track & Trace / Compliance
+  { c:"tt", t:"EU FMD", f:"Falsified Medicines Directive (2011/62/EU)", d:"The directive requiring safety features on prescription medicines in the EU: a unique identifier on every carton, an anti-tamper device, and verification at dispense. In force for serialization since February 2019." },
+  { c:"tt", t:"Delegated Regulation (EU) 2016/161", f:"", d:"The detailed rules under FMD: what the unique identifier contains, how it is printed (DataMatrix), uploaded, verified and decommissioned." },
+  { c:"tt", t:"UI", f:"Unique Identifier", d:"The serialized code on every carton — product code (GTIN), a randomised serial number (≤ 20 alphanumeric), batch number and expiry date, plus a national reimbursement number where required." },
+  { c:"tt", t:"GTIN", f:"Global Trade Item Number", d:"The GS1 product code inside the UI — Cardexil 10 mg carton 00359123000108, Cardexil 20 mg 00359123000207, the CDX case 20359123000317. The check digit is computed, never typed." },
+  { c:"tt", t:"DataMatrix", f:"GS1 DataMatrix (ECC 200)", d:"The 2D barcode symbology mandated for the carton UI — printable and camera-readable at 200 cartons per minute, graded to ISO 15415." },
+  { c:"tt", t:"Serialization", f:"", d:"Giving every saleable unit its own identity: allocate serials, print the UI, verify it by camera, commission it to the EU Hub. In Plant 2 this happens ONLY at the cartoner's serialization station (CR3/CR5)." },
+  { c:"tt", t:"Print & verify", f:"", d:"A camera reads back every printed UI at line speed and grades it; unverified or unreadable codes are rejected before they exist as medicine. Fault 2205 = UI printhead." },
+  { c:"tt", t:"Commissioning / Decommissioning", f:"", d:"Commissioning: reporting a serial as active to the EU Hub. Decommissioning: marking it dispensed, destroyed, sampled, stolen or exported — the serial's life is a state machine." },
+  { c:"tt", t:"EMVO / EU Hub", f:"European Medicines Verification Organisation", d:"The central EU router: manufacturers upload pack data once to the EU Hub, which distributes it to every national system. Upload must be acknowledged — buffering without an ack is not compliance." },
+  { c:"tt", t:"NMVS / NMVO", f:"National Medicines Verification System / Organisation", d:"The per-country databases (fed by the EU Hub) that pharmacies and wholesalers query to verify and decommission a carton at dispense — an 'unknown serial' answer there is a potential falsification investigation." },
+  { c:"tt", t:"Anti-tamper device", f:"ATD", d:"The seal or label that shows whether a carton has been opened — applied at the cartoner, not printed. FMD's second safety feature." },
+  { c:"tt", t:"Aggregation", f:"", d:"The recorded parent-child chain: carton → bundle (10) → case (20 bundles = 200 cartons) → pallet SSCC. Honest note: EU FMD does NOT mandate it — Helvion builds it for warehouse efficiency, wholesaler contracts and DSCSA-readiness, and teaches it as best practice." },
+  { c:"tt", t:"SSCC", f:"Serial Shipping Container Code", d:"The 18-digit GS1 'license plate' on each pallet (003591230800127456) — the top of the aggregation tree and the key logistics resolves." },
+  { c:"tt", t:"EPCIS", f:"Electronic Product Code Information Services", d:"The GS1 event standard (what / when / where / why) used to exchange commissioning, aggregation and shipping events between MES, serialization provider and partners." },
+  { c:"tt", t:"Serialization provider (L4)", f:"", d:"The enterprise system that allocates randomised serial ranges, holds the master pack data and talks to the EU Hub. Plant 2's site manager HP2-SER (L3) sits between it and the lines." },
+  { c:"tt", t:"Serial-authority law", f:"", d:"Carton serials come ONLY from the L4 provider's allocated ranges — the MES consumes them, never invents them. Bundle, case and SSCC ids are MES-generated under the company prefix." },
+  { c:"tt", t:"National reimbursement vignette", f:"bollino (IT) · AIC code", d:"Some markets require a national number and a lot-tracked sticker (Italy's bollino, carrying the AIC authorisation code) on the carton. A consumed, reconciled fiscal material — the export variant CDX-10-EXP carries VIG-IT-CDX10." },
+  { c:"tt", t:"DSCSA", f:"Drug Supply Chain Security Act (US)", d:"The US counterpart to FMD — serialization plus, since 2023–2024, interoperable electronic tracing of every saleable unit through the supply chain (which is why aggregation matters)." },
+  { c:"tt", t:"QP", f:"Qualified Person", d:"The legally responsible person (EU) who certifies that a batch was made and tested per its authorisation and GMP. Certification turns quarantine stock into saleable medicine; no QP certificate (QP-2417) = legally unsellable — however perfect the tablets." },
+  { c:"tt", t:"Recall", f:"", d:"Pulling affected product back from the market. With genealogy and serialization: a surgical list of carton serials. Without it: block every batch that touched the lot and hope." },
+
+  // 💊 OSD Process & GxP Terms
+  { c:"osd", t:"OSD", f:"Oral Solid Dose", d:"Tablets and capsules — the highest-volume pharmaceutical dosage form. Plant 2 makes film-coated tablets: batch upstream, discrete downstream." },
+  { c:"osd", t:"API", f:"Active Pharmaceutical Ingredient", d:"The molecule that does the work — a few milligrams per tablet, most of the batch cost. Received with a Certificate of Analysis (CoA) per lot, identity-tested by NIR at the dock and QC-released. Lot API-CDX-5512 is the ROOT of the genealogy chain that ends at a carton UI." },
+  { c:"osd", t:"Excipient", f:"", d:"Everything in the tablet that isn't the API: fillers, binders, disintegrants, lubricants, coating polymers. Each comes with its own supplier lot and CoA." },
+  { c:"osd", t:"Dispensing", f:"Weigh & dispense booth (DSP1)", d:"The recipe kitchen: each material weighed on a daily-calibrated balance to ±0.1% under containment, second-person verified, container labeled. Every scale print is a batch-record entry — the first place an MES pays for itself." },
+  { c:"osd", t:"High-shear wet granulation", f:"GRN1", d:"Mixing powders with binder solution (8% PVP) under an impeller and chopper until granules form — the endpoint is read from impeller power draw, not the clock (massing 6–10 min)." },
+  { c:"osd", t:"Fluid-bed drying", f:"FBD2", d:"Hot air (60–70 °C inlet) suspends the wet granulate until moisture hits target. Endpoint by inline NIR; audited by the lab hours later — this training's frozen-probe villain lives here." },
+  { c:"osd", t:"LOD", f:"Loss On Drying", d:"Pharma-speak for moisture: weight lost when a sample is dried in a 105 °C oven. Granulate target 2.0% (window 1.5–2.5%). Too wet = sticking, capping, microbial risk; too dry = friable tablets." },
+  { c:"osd", t:"Karl Fischer", f:"KF titration", d:"The lab's water-specific reference method — more selective than the LOD oven, still hours behind the inline probe. The MES auto-imports it from LIMS to validate the NIR." },
+  { c:"osd", t:"NIR probe", f:"Near-InfraRed", d:"The inline spectroscopic moisture sensor that controls the dryer in real time — audited later by KF/LOD. A fouled probe repeating its last value is this training's favourite villain (flatline rule!)." },
+  { c:"osd", t:"Final blending", f:"BLD1", d:"After sieving (1.0 mm) and dry milling of the dried granules through a 0.8–1.2 mm screen: adding lubricant (0.5–1% magnesium stearate) and blending 5 min at 12 rpm. Over-blending is a REAL failure mode — the lubricant coats particles and the tablets go soft and slow to dissolve." },
+  { c:"osd", t:"Blend uniformity", f:"BU", d:"Proof that the API is evenly distributed through the blend — sampled at set locations or measured inline by NIR; reported as RSD. Blends of different strengths look identical: only data knows which is which." },
+  { c:"osd", t:"IBC tote", f:"Intermediate Bulk Container (IBC-00xx)", d:"The stainless bin that carries a blend lot (BLND-1834) between rooms — the genealogy vehicle. Married to a blend lot, carrying a hold-time clock (max 30 days, ≤ 50% RH — the MES runs it and blocks the next step when it expires) and a cleaning status." },
+  { c:"osd", t:"Rotary tablet press", f:"PR3 / PR5", d:"A turret of punches and dies (the tooling set — tracked in the genealogy; FEM-2.5 needs its own) compressing blend into tablets at 4,000 per minute. Force is measured on EVERY tablet and out-of-band ones are rejected individually (fault 3104 = punch overload). The fastest data source in the plant." },
+  { c:"osd", t:"Weight / Hardness / Thickness", f:"IPC trio", d:"The in-process checks every 30 min: Cardexil 10 mg = 250 mg ±5%, hardness 80–140 N (target 110 N), thickness within spec. FEM-2.5 = 80 mg / 45 N." },
+  { c:"osd", t:"Disintegration & Dissolution", f:"", d:"Disintegration: the tablet breaks up in ≤ 15 min. Dissolution: the API actually dissolves — Q ≥ 80% at 30 min. Pharmacopoeial tests (Ph. Eur. / USP) that decide if the batch works in a patient." },
+  { c:"osd", t:"Assay / Content uniformity", f:"", d:"Assay: total API is 95–105% of label claim. Content uniformity: each individual tablet carries the right dose. Both are release tests from LIMS." },
+  { c:"osd", t:"IPC", f:"In-Process Control", d:"The scheduled checks during a run — weight, hardness, thickness, friability (≤ 1.0% loss after 100 drum turns) — plus the inline deduster/metal-detector test-piece checks (Fe 1.5 mm). Results go into SPC; an out-of-spec result puts the run on hold." },
+  { c:"osd", t:"Film coating", f:"Pan coater CO1 / CO5", d:"Spraying coating suspension (lot CS-118 from kitchen CK1: 15% solids, 24 h pot life — past it, it is waste) onto tumbling tablets in a perforated pan (bed 40–45 °C, weight gain 3%). The coated batch is the pack SKU. Line 5's CO5 exists because a potent product must never share a coater." },
+  { c:"osd", t:"Bulk tablet hold", f:"", d:"Coated tablets wait in drums (100% identity check, ≤ 14 days) until packaging release — the batch → discrete boundary. Everything after it runs at line speed." },
+  { c:"osd", t:"Blister", f:"BL3 / BL5 · 400 blisters/min", d:"Thermoformed pockets in PVC/PVDC film, filled with tablets and sealed with aluminium lidding foil at 180 °C; a camera checks every pocket. 10 tablets per blister, 2 blisters per carton." },
+  { c:"osd", t:"Lidding foil / Foil splice", f:"lot FL-2216", d:"The printed aluminium foil that seals the blister. Every reel change is a splice — a 6–9 second micro-stop, invisible at 30 s polling, and the line's #1 OEE loss (fault 5203)." },
+  { c:"osd", t:"Cartoner", f:"CR3 / CR5 · 200 cartons/min", d:"Folds the carton blank, inserts blisters and leaflet (fault 4408 = leaflet missing), then the serialization station prints and verifies the UI and applies the anti-tamper seal." },
+  { c:"osd", t:"Carton blank / Artwork", f:"", d:"The pre-printed folding box — product- AND market-specific (language, AIC code, reimbursement field). Export product dressed in domestic artwork is a mislabeled medicine, not a cosmetic slip." },
+  { c:"osd", t:"Bundle / Case / Pallet", f:"10 · 20 · 48", d:"10 cartons = 1 bundle (shrink) · 20 bundles = 1 case (200 cartons = 4,000 tablets, GS1-128 label) · 48 cases = 1 SSCC pallet. Press and blister at 4,000 tablets/min ⇒ exactly 1 case/min at the cartoner." },
+  { c:"osd", t:"TabCountK", f:"= kilo-tablets", d:"The press's legacy counter register counts in thousands of tablets (a 16-bit register would roll over at 65,535 otherwise). Famous in this training: map it as tablets and your shift report is off by ×1,000." },
+  { c:"osd", t:"WeightTmg", f:"= tenths of a milligram", d:"The tablet-weight register in 0.1 mg units (2,500 = 250.0 mg). Read it as milligrams and every weight is ×10 wrong — deterministically." },
+  { c:"osd", t:"Potent compound segregation", f:"ZTX-50 · Line 5", d:"A potent, intensely coloured API runs ONLY on segregated equipment (PR5/CO5/BL5/CR5) and shares nothing upstream of sealed cartons. Carryover is a patient-safety event, not a quality blemish." },
+  { c:"osd", t:"Cleaning validation", f:"swab / rinse · MACO", d:"Proof that cleaning removes the previous product below the Maximum Allowable Carry-Over limit — swab and rinse samples, analysed by the lab, released by QA. Until that release the asset (or IBC) is not clean, whatever the tag says." },
+  { c:"osd", t:"CPP / CQA", f:"Critical Process Parameter / Critical Quality Attribute", d:"QbD vocabulary: a CQA is a property the patient needs right (dissolution, assay); a CPP is a process setting that drives it (granulation endpoint, LOD, compression force). The MES watches CPPs so CQAs pass." },
+  { c:"osd", t:"OOS / OOT", f:"Out Of Specification / Out Of Trend", d:"OOS: a result outside its limit — a formal lab investigation before any decision. OOT: still in spec but drifting — SPC's job is to catch OOT before it becomes OOS." },
+  { c:"osd", t:"Review by exception", f:"", d:"Instead of QA reading all 180 pages of every batch record, the eBR flags only the entries outside limits or rules; QA reviews those. Batch-record review 12 days → 1.5." },
+  { c:"osd", t:"Annex 11 / 21 CFR Part 11", f:"EU GMP Annex 11 · FDA Part 11", d:"The rules for computerized systems in GMP: validated software, secure e-records, an immutable audit trail (who changed what, when, why — reviewed at release), e-signatures (user id + password or badge + PIN, with meaning and timestamp) that are legally equivalent to ink. An MES in pharma must be built to these from day one." },
+  { c:"osd", t:"ALCOA+", f:"Attributable, Legible, Contemporaneous, Original, Accurate (+ Complete, Consistent, Enduring, Available)", d:"The data-integrity checklist regulators apply to every record — paper or electronic. Capturing at source with a timestamp and a user id satisfies most of it automatically." },
+  { c:"osd", t:"CSV", f:"Computer System Validation", d:"Documented evidence that a computerized system does what it should, reliably (URS → risk assessment → IQ/OQ/PQ, scaled to patient risk per ISPE's GAMP 5 guide). Plan it into the MES project — it is not a phase you add at the end." },
+];
+
+const searchEl = document.getElementById("search");
+const chipsEl = document.getElementById("chips");
+const glossaryEl = document.getElementById("glossary");
+const shownEl = document.getElementById("shown");
+const totalEl = document.getElementById("total");
+const noresultsEl = document.getElementById("noresults");
+
+let activeCat = "all";
+totalEl.textContent = GLOSSARY.length;
+
+// Build chips
+const chipDefs = [["all", "All (" + GLOSSARY.length + ")"]].concat(
+  Object.entries(CATEGORIES).map(([key, c]) => {
+    const n = GLOSSARY.filter(g => g.c === key).length;
+    return [key, c.icon + " " + c.name + " (" + n + ")"];
+  })
+);
+chipDefs.forEach(([key, label]) => {
+  const b = document.createElement("button");
+  b.className = "chip" + (key === "all" ? " active" : "");
+  b.textContent = label;
+  b.addEventListener("click", () => {
+    activeCat = key;
+    document.querySelectorAll(".chip").forEach(c => c.classList.remove("active"));
+    b.classList.add("active");
+    render();
+  });
+  chipsEl.appendChild(b);
+});
+
+function esc(s) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+function highlight(text, q) {
+  if (!q) return esc(text);
+  const i = text.toLowerCase().indexOf(q);
+  if (i === -1) return esc(text);
+  return esc(text.slice(0, i)) + "<mark>" + esc(text.slice(i, i + q.length)) + "</mark>" + highlight(text.slice(i + q.length), q);
+}
+
+function render() {
+  const q = searchEl.value.trim().toLowerCase();
+  let shown = 0;
+  let html = "";
+  for (const [key, cat] of Object.entries(CATEGORIES)) {
+    if (activeCat !== "all" && activeCat !== key) continue;
+    const items = GLOSSARY.filter(g =>
+      g.c === key &&
+      (!q || g.t.toLowerCase().includes(q) || g.f.toLowerCase().includes(q) || g.d.toLowerCase().includes(q))
+    );
+    if (!items.length) continue;
+    shown += items.length;
+    html += '<div class="section"><h2>' + cat.icon + " " + esc(cat.name) + '</h2><div class="sub">' + esc(cat.sub) + '</div><div class="terms">';
+    for (const g of items) {
+      html += '<div class="term"><div class="line"><span class="t">' + highlight(g.t, q) + "</span>" +
+        (g.f ? '<span class="f">' + highlight(g.f, q) + "</span>" : "") +
+        '</div><p class="d">' + highlight(g.d, q) + "</p></div>";
+    }
+    html += "</div></div>";
+  }
+  glossaryEl.innerHTML = html;
+  shownEl.textContent = shown;
+  noresultsEl.style.display = shown === 0 ? "block" : "none";
+}
+
+searchEl.addEventListener("input", render);
+render();
+</script>
+<style>
+  .gate-overlay { position: fixed; inset: 0; z-index: 1000; background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); display: flex; align-items: center; justify-content: center; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  .gate-card { background: #fff; border-radius: 18px; padding: 30px 28px; width: 100%; max-width: 360px; box-shadow: 0 18px 60px rgba(0,0,0,0.5); }
+  .gate-brand { text-align: center; margin-bottom: 16px; }
+  .gate-logo { width: 54px; height: 54px; border-radius: 14px; background: #3730a3; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5em; }
+  .gate-brand h2 { font-size: 1.15em; color: #111827; margin-top: 10px; }
+  .gate-brand p { font-size: 0.8em; color: #6b7280; margin-top: 3px; }
+  .gate-card label { display: block; font-size: 0.8em; font-weight: 600; color: #374151; margin: 10px 0 4px; }
+  .gate-card input { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 10px; font-size: 0.95em; outline: none; box-sizing: border-box; }
+  .gate-card input:focus { border-color: #3730a3; box-shadow: 0 0 0 3px rgba(55,48,163,0.15); }
+  .gate-btn { width: 100%; margin-top: 16px; padding: 11px; border: none; border-radius: 10px; background: #3730a3; color: #fff; font-weight: 700; font-size: 0.95em; cursor: pointer; }
+  .gate-btn:hover { background: #312e81; }
+  .gate-alt { display: block; width: 100%; text-align: center; background: none; border: none; color: #6b7280; font-size: 0.8em; margin-top: 12px; cursor: pointer; text-decoration: underline; }
+  .gate-alt:hover { color: #3730a3; }
+  .gate-msg { margin-top: 10px; font-size: 0.82em; color: #b91c1c; background: #fee2e2; border-radius: 8px; padding: 8px 10px; display: none; }
+  .gate-msg.ok { color: #047857; background: #d1fae5; }
+  body.gate-locked { overflow: hidden; }
+</style>
+<script>
+(function () {
+  var KEY_AUTH = 'pharmaShowcaseAuth';
+  var KEY_PASS = 'pharmaShowcasePass';
+  var CODE = '1208';
+  var DEFAULT_PASS = 'dec25';
+
+  try { if (sessionStorage.getItem(KEY_AUTH) === 'ok') return; } catch (e) { return; }
+
+  function currentPass() {
+    try { return localStorage.getItem(KEY_PASS) || DEFAULT_PASS; } catch (e) { return DEFAULT_PASS; }
+  }
+
+  var ov = document.createElement('div');
+  ov.className = 'gate-overlay';
+  ov.innerHTML =
+    '<div class="gate-card">' +
+      '<div class="gate-brand"><span class="gate-logo" aria-hidden="true">💊</span>' +
+      '<h2>Helvion Pharma</h2><p>MES Practitioner Training — sign in to continue</p></div>' +
+      '<form id="gate-login">' +
+        '<label for="gate-user">Username</label><input id="gate-user" type="text" autocomplete="off">' +
+        '<label for="gate-pass">Password</label><input id="gate-pass" type="password">' +
+        '<div id="gate-login-msg" class="gate-msg"></div>' +
+        '<button type="submit" class="gate-btn">Enter Training</button>' +
+        '<button type="button" id="gate-to-reset" class="gate-alt">Change password (instructor)</button>' +
+      '</form>' +
+      '<form id="gate-reset" style="display:none">' +
+        '<label for="gate-code">Security code</label><input id="gate-code" type="password">' +
+        '<label for="gate-new">New password</label><input id="gate-new" type="password">' +
+        '<label for="gate-confirm">Confirm password</label><input id="gate-confirm" type="password">' +
+        '<div id="gate-reset-msg" class="gate-msg"></div>' +
+        '<button type="submit" class="gate-btn">Update Password</button>' +
+        '<button type="button" id="gate-to-login" class="gate-alt">Back to sign in</button>' +
+      '</form>' +
+    '</div>';
+
+  document.body.appendChild(ov);
+  document.body.classList.add('gate-locked');
+
+  function msg(id, text, ok) {
+    var m = document.getElementById(id);
+    m.textContent = text;
+    m.className = 'gate-msg' + (ok ? ' ok' : '');
+    m.style.display = 'block';
+  }
+
+  document.getElementById('gate-login').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var u = document.getElementById('gate-user').value.trim().toLowerCase();
+    var p = document.getElementById('gate-pass').value;
+    if (u === 'mes' && p === currentPass()) {
+      try { sessionStorage.setItem(KEY_AUTH, 'ok'); } catch (err) {}
+      document.body.classList.remove('gate-locked');
+      ov.remove();
+    } else {
+      msg('gate-login-msg', 'Invalid username or password', false);
+    }
+  });
+
+  document.getElementById('gate-reset').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var code = document.getElementById('gate-code').value;
+    var np = document.getElementById('gate-new').value;
+    var cp = document.getElementById('gate-confirm').value;
+    if (code !== CODE) { msg('gate-reset-msg', 'Incorrect security code', false); return; }
+    if (np.length < 4) { msg('gate-reset-msg', 'New password must be at least 4 characters', false); return; }
+    if (np !== cp) { msg('gate-reset-msg', 'Passwords do not match', false); return; }
+    try { localStorage.setItem(KEY_PASS, np); } catch (err) {}
+    msg('gate-reset-msg', 'Password updated — use it to sign in', true);
+  });
+
+  document.getElementById('gate-to-reset').addEventListener('click', function () {
+    document.getElementById('gate-login').style.display = 'none';
+    document.getElementById('gate-reset').style.display = 'block';
+  });
+  document.getElementById('gate-to-login').addEventListener('click', function () {
+    document.getElementById('gate-reset').style.display = 'none';
+    document.getElementById('gate-login').style.display = 'block';
+  });
+
+  document.getElementById('gate-user').focus();
+})();
+</script>
+</body>
+</html>
